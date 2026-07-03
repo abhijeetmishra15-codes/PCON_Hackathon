@@ -1,0 +1,129 @@
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  Search,
+  Briefcase,
+  Users,
+  MessageSquare,
+  Trophy,
+  Settings,
+  GraduationCap,
+} from 'lucide-react';
+import { cn } from '../../utils/cn';
+
+export default function Sidebar({ isOpen, onClose }) {
+  const navItems = [
+    { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard' },
+    { icon: Search, label: 'Discover', to: '/discover' },
+    { icon: Briefcase, label: 'Referrals', to: '/referrals' },
+    { icon: Users, label: 'Network', to: '/network' },
+    { icon: MessageSquare, label: 'AI Assistant', to: '/assistant' },
+    { icon: Trophy, label: 'Leaderboard', to: '/leaderboard' },
+  ];
+
+  const bottomItems = [
+    { icon: Settings, label: 'Settings', to: '/settings' },
+  ];
+
+  const handleNavClick = () => {
+    if (window.innerWidth < 1024) onClose();
+  };
+
+  const sidebarClasses = cn(
+    'fixed inset-y-0 left-0 z-50 w-[240px] flex flex-col',
+    'bg-[#FEFAF6] border-r border-border',
+    'transition-transform duration-300 ease-out lg:translate-x-0',
+    isOpen ? 'translate-x-0' : '-translate-x-full'
+  );
+
+  return (
+    <>
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-text-main/15 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+          onClick={onClose}
+        />
+      )}
+
+      <aside className={sidebarClasses}>
+        {/* Logo */}
+        <div className="h-[60px] flex items-center px-5 border-b border-border shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-btn-primary shrink-0">
+              <GraduationCap size={18} className="text-white" />
+            </div>
+            <span className="font-bold text-[17px] tracking-tight text-text-main">
+              AlumniConnect
+            </span>
+          </div>
+        </div>
+
+        {/* Nav Items */}
+        <div className="flex-1 overflow-y-auto py-5 px-3 space-y-0.5">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              onClick={handleNavClick}
+              className={({ isActive }) => cn(
+                'flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition-all duration-150 group relative',
+                isActive
+                  ? [
+                    'bg-primary/10 text-primary',
+                    'before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2',
+                    'before:w-[3px] before:h-5 before:rounded-r-full before:bg-primary',
+                  ].join(' ')
+                  : 'text-text-secondary hover:bg-secondary/80 hover:text-text-main'
+              )}
+            >
+              {({ isActive }) => (
+                <>
+                  <item.icon
+                    size={17}
+                    className={cn(
+                      'shrink-0 transition-colors duration-150',
+                      isActive ? 'text-primary' : 'text-text-secondary/70 group-hover:text-text-main'
+                    )}
+                  />
+                  {item.label}
+                </>
+              )}
+            </NavLink>
+          ))}
+        </div>
+
+        {/* Bottom: Settings */}
+        <div className="px-3 pb-4 pt-2 border-t border-border">
+          {bottomItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              onClick={handleNavClick}
+              className={({ isActive }) => cn(
+                'flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition-all duration-150 group',
+                isActive
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-text-secondary hover:bg-secondary/80 hover:text-text-main'
+              )}
+            >
+              {({ isActive }) => (
+                <>
+                  <item.icon
+                    size={17}
+                    className={cn(
+                      'shrink-0 transition-colors',
+                      isActive ? 'text-primary' : 'text-text-secondary/70 group-hover:text-text-main'
+                    )}
+                  />
+                  {item.label}
+                </>
+              )}
+            </NavLink>
+          ))}
+        </div>
+      </aside>
+    </>
+  );
+}

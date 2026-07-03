@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-text-main font-sans antialiased;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight;
+    line-height: 1.25;
+  }
+
+  /* Global text selection */
+  ::selection {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #92400E;
+  }
+
+  /* Global focus visible ring */
+  :focus-visible {
+    outline: 2px solid #F59E0B;
+    outline-offset: 2px;
+  }
+
+  /* Slim, warm-tinted custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(245, 158, 11, 0.25);
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(245, 158, 11, 0.4);
+  }
+}
+
+@layer utilities {
+  /* Warm glassmorphism panel */
+  .glass-panel {
+    background: rgba(255, 248, 242, 0.78);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.07);
+  }
+
+  /* Warm ambient gradient background decoration */
+  .bg-warm-gradient {
+    background: radial-gradient(ellipse 60% 50% at 10% 10%, rgba(245,158,11,0.08) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 50% at 90% 90%, rgba(251,146,60,0.07) 0%, transparent 70%);
+  }
+
+  /* Scrollbar hide utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
