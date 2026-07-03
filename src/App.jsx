@@ -15,6 +15,7 @@ import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 import Network from './pages/Network';
 import AdminDashboard from './pages/AdminDashboard';
+import SupabaseTest from './pages/SupabaseTest';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
+        <Route path="/test-supabase" element={<SupabaseTest />} />
         
         {/* Auth Routes */}
         <Route element={<AuthLayout />}>

@@ -1,19 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { GraduationCap, Mail, Lock, User } from 'lucide-react';
-import { Button, Input, Card } from '../../components/ui';
+import { GraduationCap, Mail, Lock, User, Calendar, BookOpen } from 'lucide-react';
+import { Button, Input, Card, Badge } from '../../components/ui';
 import { cn } from '../../utils/cn';
 
 export default function Signup() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [role, setRole] = useState('student'); // 'student' | 'alumni'
+  
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    department: '',
+    graduationYear: new Date().getFullYear() + 1 // Default to next year (Student)
+  });
+
+  const [derivedRole, setDerivedRole] = useState('student');
+
+  // Auto-calculate role based on graduation year
+  useEffect(() => {
+    const currentYear = new Date().getFullYear();
+    const gradYear = parseInt(formData.graduationYear, 10);
+    
+    if (!isNaN(gradYear)) {
+      if (gradYear > currentYear) {
+        setDerivedRole('student');
+      } else {
+        setDerivedRole('alumni');
+      }
+    }
+  }, [formData.graduationYear]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSignup = (e) => {
     e.preventDefault();
     setIsLoading(true);
+    
+    // Simulate API call and save to local storage for other pages to use
     setTimeout(() => {
+      localStorage.setItem('alumni_user_data', JSON.stringify({
+        ...formData,
+        role: derivedRole
+      }));
+      
       setIsLoading(false);
       navigate('/dashboard');
     }, 1500);
@@ -31,55 +66,89 @@ export default function Signup() {
       </div>
 
       <Card variant="glass" className="p-8 shadow-floating">
-        <form onSubmit={handleSignup} className="space-y-5">
+        <form onSubmit={handleSignup} className="space-y-4">
           
-          <div className="flex p-1 bg-secondary rounded-xl mb-6">
-            <button
-              type="button"
-              onClick={() => setRole('student')}
-              className={cn(
-                "flex-1 py-2 text-sm font-medium rounded-lg transition-all",
-                role === 'student' ? "bg-white shadow-soft text-text-main" : "text-text-secondary hover:text-text-main"
-              )}
-            >
-              Student
-            </button>
-            <button
-              type="button"
-              onClick={() => setRole('alumni')}
-              className={cn(
-                "flex-1 py-2 text-sm font-medium rounded-lg transition-all",
-                role === 'alumni' ? "bg-white shadow-soft text-text-main" : "text-text-secondary hover:text-text-main"
-              )}
-            >
-              Alumni
-            </button>
+          {/* Dynamic Role Indicator */}
+          <div className="flex items-center justify-between p-4 bg-secondary/50 rounded-xl border border-border mb-4">
+            <div>
+              <p className="text-xs text-text-secondary font-medium uppercase tracking-wider mb-1">Account Type</p>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-text-main">
+                  {derivedRole === 'student' ? 'Student Account' : 'Alumni Account'}
+                </span>
+                <Badge variant={derivedRole === 'student' ? 'primary' : 'success'}>
+                  Auto-assigned
+                </Badge>
+              </div>
+            </div>
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${derivedRole === 'student' ? 'bg-primary/10 text-primary' : 'bg-success/10 text-success'}`}>
+              <GraduationCap size={20} />
+            </div>
           </div>
 
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-text-main ml-1">Full Name</label>
-            <Input 
-              type="text" 
-              placeholder="John Doe" 
-              leftIcon={<User size={18} />}
-              required
-            />
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-text-main ml-1">Full Name</label>
+              <Input 
+                type="text" 
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+                placeholder="John Doe" 
+                leftIcon={<User size={18} />}
+                required
+              />
+            </div>
 
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-text-main ml-1">University Email</label>
-            <Input 
-              type="email" 
-              placeholder="name@university.edu" 
-              leftIcon={<Mail size={18} />}
-              required
-            />
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-text-main ml-1">University Email</label>
+              <Input 
+                type="email" 
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="name@university.edu" 
+                leftIcon={<Mail size={18} />}
+                required
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-text-main ml-1">Department</label>
+              <Input 
+                type="text" 
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                placeholder="e.g. Computer Science" 
+                leftIcon={<BookOpen size={18} />}
+                required
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-text-main ml-1">Graduation Year</label>
+              <Input 
+                type="number" 
+                name="graduationYear"
+                value={formData.graduationYear}
+                onChange={handleChange}
+                placeholder="YYYY" 
+                min="1950"
+                max="2030"
+                leftIcon={<Calendar size={18} />}
+                required
+              />
+            </div>
           </div>
           
-          <div className="space-y-1">
+          <div className="space-y-1 pt-1">
             <label className="text-sm font-medium text-text-main ml-1">Password</label>
             <Input 
               type="password" 
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               placeholder="Create a strong password" 
               leftIcon={<Lock size={18} />}
               required
@@ -88,10 +157,10 @@ export default function Signup() {
 
           <Button 
             type="submit" 
-            className="w-full h-12 text-base mt-4"
+            className="w-full h-12 text-base mt-6"
             isLoading={isLoading}
           >
-            Create {role === 'alumni' ? 'Alumni' : 'Student'} Account
+            Create {derivedRole === 'alumni' ? 'Alumni' : 'Student'} Account
           </Button>
         </form>
 

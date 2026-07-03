@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   User, Mail, Building2, Briefcase, GraduationCap, 
@@ -7,11 +7,36 @@ import {
 import { Card, Button, Input, Badge, Avatar } from '../components/ui';
 
 export default function Profile() {
-  const [role, setRole] = useState('student'); // 'student' or 'alumni'
+  const [role, setRole] = useState('student');
+  const [userData, setUserData] = useState({
+    fullName: 'Alex Johnson',
+    email: 'alex.j@university.edu',
+    department: 'Computer Science',
+    graduationYear: '2027'
+  });
+
+  useEffect(() => {
+    // Read from localStorage to persist the signup flow
+    const savedData = localStorage.getItem('alumni_user_data');
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        if (parsed.role) setRole(parsed.role);
+        setUserData({
+          fullName: parsed.fullName || 'Alex Johnson',
+          email: parsed.email || 'alex.j@university.edu',
+          department: parsed.department || 'Computer Science',
+          graduationYear: parsed.graduationYear || '2027'
+        });
+      } catch (e) {
+        console.error("Error parsing user data");
+      }
+    }
+  }, []);
 
   return (
     <div className="pb-14 max-w-4xl mx-auto">
-      {/* Header & Role Toggle (Demo only) */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-7 gap-4">
         <div>
           <h1 className="text-[30px] font-extrabold tracking-tight text-text-main mb-1">
@@ -21,26 +46,9 @@ export default function Profile() {
             Manage your personal information and resume.
           </p>
         </div>
-        
-        {/* Demo Toggle */}
-        <div className="flex bg-secondary p-1 rounded-xl">
-          <button
-            onClick={() => setRole('student')}
-            className={`px-4 py-1.5 text-sm font-semibold rounded-lg transition-all ${
-              role === 'student' ? 'bg-white shadow-soft text-text-main' : 'text-text-secondary hover:text-text-main'
-            }`}
-          >
-            Student View
-          </button>
-          <button
-            onClick={() => setRole('alumni')}
-            className={`px-4 py-1.5 text-sm font-semibold rounded-lg transition-all ${
-              role === 'alumni' ? 'bg-white shadow-soft text-text-main' : 'text-text-secondary hover:text-text-main'
-            }`}
-          >
-            Alumni View
-          </button>
-        </div>
+        <Badge variant={role === 'student' ? 'primary' : 'success'} className="px-3 py-1.5 text-sm uppercase tracking-wider font-bold">
+          {role} Account
+        </Badge>
       </div>
 
       <div className="space-y-6">
@@ -60,10 +68,10 @@ export default function Profile() {
                 </button>
               </div>
               <div className="flex-1 pb-2">
-                <h2 className="text-2xl font-bold text-text-main">Alex Johnson</h2>
+                <h2 className="text-2xl font-bold text-text-main">{userData.fullName}</h2>
                 <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-text-secondary">
                   <div className="flex items-center gap-1.5">
-                    <Mail size={15} /> alex.j@university.edu
+                    <Mail size={15} /> {userData.email}
                   </div>
                   <div className="flex items-center gap-1.5">
                     <MapPin size={15} /> San Francisco, CA
@@ -87,11 +95,11 @@ export default function Profile() {
                 <>
                   <div className="space-y-1.5">
                     <label className="text-[13px] font-semibold text-text-secondary ml-1">Department</label>
-                    <Input leftIcon={<GraduationCap size={16} />} defaultValue="Computer Science" />
+                    <Input leftIcon={<GraduationCap size={16} />} defaultValue={userData.department} />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[13px] font-semibold text-text-secondary ml-1">Expected Graduation Year</label>
-                    <Input leftIcon={<User size={16} />} defaultValue="2027" type="number" />
+                    <Input leftIcon={<User size={16} />} defaultValue={userData.graduationYear} type="number" />
                   </div>
                   <div className="space-y-1.5 md:col-span-2">
                     <label className="text-[13px] font-semibold text-text-secondary ml-1">Github / Portfolio</label>
@@ -100,6 +108,14 @@ export default function Profile() {
                 </>
               ) : (
                 <>
+                  <div className="space-y-1.5">
+                    <label className="text-[13px] font-semibold text-text-secondary ml-1">Department Graduated</label>
+                    <Input leftIcon={<GraduationCap size={16} />} defaultValue={userData.department} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[13px] font-semibold text-text-secondary ml-1">Graduation Year</label>
+                    <Input leftIcon={<User size={16} />} defaultValue={userData.graduationYear} type="number" />
+                  </div>
                   <div className="space-y-1.5">
                     <label className="text-[13px] font-semibold text-text-secondary ml-1">Current Company</label>
                     <Input leftIcon={<Building2 size={16} />} defaultValue="Google" />
@@ -114,7 +130,7 @@ export default function Profile() {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[13px] font-semibold text-text-secondary ml-1">Years of Experience</label>
-                    <Input leftIcon={<User size={16} />} defaultValue="3" type="number" />
+                    <Input leftIcon={<User size={16} />} defaultValue={new Date().getFullYear() - parseInt(userData.graduationYear || new Date().getFullYear())} type="number" />
                   </div>
                 </>
               )}
@@ -143,7 +159,7 @@ export default function Profile() {
                       <FileText size={20} />
                     </div>
                     <div>
-                      <p className="text-[14px] font-semibold text-text-main">Alex_Johnson_Resume.pdf</p>
+                      <p className="text-[14px] font-semibold text-text-main">{userData.fullName.replace(/\s+/g, '_')}_Resume.pdf</p>
                       <p className="text-[12px] text-text-secondary">Updated 2 days ago • 2.4 MB</p>
                     </div>
                   </div>
