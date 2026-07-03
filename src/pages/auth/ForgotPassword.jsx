@@ -1,20 +1,34 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, ArrowLeft } from 'lucide-react';
+import { Mail, ArrowLeft, AlertCircle } from 'lucide-react';
 import { Button, Input, Card } from '../../components/ui';
+import { supabase } from '../../lib/supabase';
 
 export default function ForgotPassword() {
+  const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    setError(null);
+    
+    try {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (resetError) throw resetError;
+
       setIsSubmitted(true);
-    }, 1000);
+    } catch (err) {
+      setError(err.message || 'Failed to send reset link.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -31,10 +45,22 @@ export default function ForgotPassword() {
       <Card variant="glass" className="p-8 shadow-floating">
         {!isSubmitted ? (
           <form onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-600 mb-4">
+                <AlertCircle size={18} className="shrink-0 mt-0.5" />
+                <p className="text-sm font-medium">{error}</p>
+              </div>
+            )}
+            
             <div className="space-y-1">
               <label className="text-sm font-medium text-text-main ml-1">Email</label>
               <Input 
                 type="email" 
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setError(null);
+                }}
                 placeholder="name@university.edu" 
                 leftIcon={<Mail size={18} />}
                 required
@@ -56,12 +82,15 @@ export default function ForgotPassword() {
             </div>
             <h3 className="text-xl font-semibold mb-2">Check your email</h3>
             <p className="text-text-secondary text-sm mb-6">
-              We sent a password reset link to your email.
+              We sent a password reset link to <strong>{email}</strong>.
             </p>
             <Button 
               variant="outline" 
               className="w-full"
-              onClick={() => setIsSubmitted(false)}
+              onClick={() => {
+                setIsSubmitted(false);
+                setEmail('');
+              }}
             >
               Try another email
             </Button>

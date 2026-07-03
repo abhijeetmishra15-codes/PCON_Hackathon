@@ -7,6 +7,7 @@ import LandingPage from './pages/LandingPage';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import AIAssistant from './pages/AIAssistant';
 import Discover from './pages/Discover';
@@ -17,35 +18,43 @@ import Network from './pages/Network';
 import AdminDashboard from './pages/AdminDashboard';
 import SupabaseTest from './pages/SupabaseTest';
 
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/test-supabase" element={<SupabaseTest />} />
-        
-        {/* Auth Routes */}
-        <Route element={<AuthLayout />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-        </Route>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/test-supabase" element={<SupabaseTest />} />
+          
+          {/* Auth Routes */}
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+          </Route>
 
-        {/* Protected App Routes */}
-        <Route element={<MainLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/discover" element={<Discover />} />
-          <Route path="/referrals" element={<Referrals />} />
-          <Route path="/assistant" element={<AIAssistant />} />
-          <Route path="/network" element={<Network />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/settings" element={<Profile />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+          {/* Protected App Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<MainLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/discover" element={<Discover />} />
+              <Route path="/referrals" element={<Referrals />} />
+              <Route path="/assistant" element={<AIAssistant />} />
+              <Route path="/network" element={<Network />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/settings" element={<Profile />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Route>
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

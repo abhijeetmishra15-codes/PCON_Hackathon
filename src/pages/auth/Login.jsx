@@ -1,20 +1,47 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { GraduationCap, Mail, Lock, ArrowRight } from 'lucide-react';
+import { GraduationCap, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
 import { Button, Input, Card } from '../../components/ui';
+import { supabase } from '../../lib/supabase';
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
 
-  const handleLogin = (e) => {
+  const handleChange = (e) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    if (error) setError(null);
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
+    setError(null);
+    
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (signInError) throw signInError;
+
+      // Navigate back to where they were trying to go, or dashboard
+      const from = location.state?.from?.pathname || '/dashboard';
+      navigate(from, { replace: true });
+    } catch (err) {
+      setError(err.message || 'Failed to sign in. Please check your credentials.');
+    } finally {
       setIsLoading(false);
-      navigate('/dashboard');
-    }, 1000);
+    }
   };
 
   return (
@@ -38,10 +65,21 @@ export default function Login() {
 
       <Card className="p-7 shadow-floating border border-[rgba(0,0,0,0.07)]">
         <form onSubmit={handleLogin} className="space-y-4">
+          
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-600 mb-4">
+              <AlertCircle size={18} className="shrink-0 mt-0.5" />
+              <p className="text-sm font-medium">{error}</p>
+            </div>
+          )}
+
           <div className="space-y-1.5">
             <label className="text-[13px] font-semibold text-text-main">Email</label>
             <Input
               type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="name@university.edu"
               leftIcon={<Mail size={16} className="text-text-secondary/70" />}
               required
@@ -60,6 +98,9 @@ export default function Login() {
             </div>
             <Input
               type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               placeholder="Enter your password"
               leftIcon={<Lock size={16} className="text-text-secondary/70" />}
               required

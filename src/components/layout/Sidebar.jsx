@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Search,
@@ -10,10 +10,15 @@ import {
   Settings,
   GraduationCap,
   ShieldCheck,
+  LogOut
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Sidebar({ isOpen, onClose }) {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard' },
     { icon: Search, label: 'Discover', to: '/discover' },
@@ -30,6 +35,11 @@ export default function Sidebar({ isOpen, onClose }) {
 
   const handleNavClick = () => {
     if (window.innerWidth < 1024) onClose();
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/login');
   };
 
   const sidebarClasses = cn(
@@ -96,8 +106,8 @@ export default function Sidebar({ isOpen, onClose }) {
           ))}
         </div>
 
-        {/* Bottom: Settings */}
-        <div className="px-3 pb-4 pt-2 border-t border-border">
+        {/* Bottom: Settings & Logout */}
+        <div className="px-3 pb-4 pt-2 border-t border-border space-y-0.5">
           {bottomItems.map((item) => (
             <NavLink
               key={item.to}
@@ -124,6 +134,14 @@ export default function Sidebar({ isOpen, onClose }) {
               )}
             </NavLink>
           ))}
+
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition-all duration-150 group text-text-secondary hover:bg-red-50 hover:text-red-600 mt-1"
+          >
+            <LogOut size={17} className="shrink-0 transition-colors text-text-secondary/70 group-hover:text-red-500" />
+            Log out
+          </button>
         </div>
       </aside>
     </>

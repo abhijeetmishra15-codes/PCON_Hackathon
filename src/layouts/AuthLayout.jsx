@@ -1,7 +1,17 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Navigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function AuthLayout() {
+  const { user, isLoading } = useAuth();
+
+  // If loading, you could show a spinner here, but let's just wait or let it render
+  // because the context resolves very fast on initial load, or we let the routes handle it.
+  
+  if (!isLoading && user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden relative">
       {/* Warm ambient blobs */}
