@@ -15,7 +15,9 @@ export default function AlumniProfileModal({
   currentUserId,
   onSendRequest,
   onCancelRequest,
-  onAcceptRequest
+  onAcceptRequest,
+  referralRecord,
+  onRequestReferral
 }) {
   const [mounted, setMounted] = useState(false);
 
@@ -211,10 +213,61 @@ export default function AlumniProfileModal({
                   </div>
 
                   {/* Additional Actions */}
-                  <div className="space-y-2">
-                    <Button variant="outline" className="w-full justify-start h-11" leftIcon={<FileText size={16} />}>
-                      Request Referral
-                    </Button>
+                  <div className="space-y-2 group/tooltip relative">
+                    {(() => {
+                      if (alumni.id === currentUserId) return null;
+                      
+                      const isConnected = connectionRecord?.status === 'accepted';
+
+                      console.log("ALUMNI MODAL CONNECTION CHECK:");
+                      console.log("Alumni ID:", alumni.id);
+                      console.log("Current User ID:", currentUserId);
+                      console.log("Connection Record:", connectionRecord);
+                      console.log("Is Connected?", isConnected);
+
+                      if (!isConnected) {
+                        return (
+                          <div className="relative">
+                            <Button disabled variant="outline" className="w-full justify-start h-11" leftIcon={<FileText size={16} />}>
+                              Request Referral
+                            </Button>
+                            <div className="absolute inset-0 bg-transparent group-hover/tooltip:block" title="Connect with this alumni before requesting a referral." />
+                          </div>
+                        );
+                      }
+
+                      if (referralRecord) {
+                        let label = 'Referral Requested';
+                        let Icon = FileText;
+                        let variant = 'secondary';
+                        
+                        if (referralRecord.status === 'reviewing') label = 'Under Review';
+                        if (referralRecord.status === 'referred') {
+                          label = 'Completed';
+                          Icon = CheckCircle;
+                          variant = 'outline';
+                        }
+                        if (referralRecord.status === 'rejected') label = 'Rejected';
+
+                        return (
+                          <Button disabled variant={variant} className="w-full justify-start h-11 bg-primary/5 text-primary border-primary/20" leftIcon={<Icon size={16} />}>
+                            {label}
+                          </Button>
+                        );
+                      }
+
+                      return (
+                        <Button 
+                          variant="outline" 
+                          className="w-full justify-start h-11 shadow-sm hover:shadow transition-shadow border-primary/30 hover:border-primary text-primary" 
+                          leftIcon={<FileText size={16} />}
+                          onClick={() => onRequestReferral(alumni)}
+                        >
+                          Request Referral
+                        </Button>
+                      );
+                    })()}
+                    
                     <Button variant="ghost" className="w-full justify-start h-11 text-text-secondary hover:text-text-main" leftIcon={<MessageSquare size={16} />}>
                       Message (Coming Soon)
                     </Button>

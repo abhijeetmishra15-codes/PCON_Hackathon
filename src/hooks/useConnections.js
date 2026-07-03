@@ -25,9 +25,14 @@ export function useConnections() {
       
       const newMap = {};
       allConns.forEach(c => {
-        // Find the ID of the *other* person
         const otherId = c.requester_id === user.id ? c.addressee_id : c.requester_id;
-        newMap[otherId] = c;
+        
+        // If there are multiple connections (e.g. an old rejected one and a new accepted one),
+        // we must prioritize 'accepted'. Otherwise, we just keep the first one we see.
+        // We should ideally order by created_at DESC in the service, but this safely prioritizes accepted.
+        if (!newMap[otherId] || c.status === 'accepted') {
+          newMap[otherId] = c;
+        }
       });
       setConnectionsMap(newMap);
 

@@ -16,6 +16,8 @@ import { useAlumni } from '../hooks/useAlumni';
 import { useConnections } from '../hooks/useConnections';
 import { useAuth } from '../contexts/AuthContext';
 import AlumniProfileModal from '../components/AlumniProfileModal';
+import RequestReferralModal from '../components/referrals/RequestReferralModal';
+import { useReferrals } from '../hooks/useReferrals';
 
 export default function Discover() {
   const { user } = useAuth();
@@ -37,7 +39,20 @@ export default function Discover() {
     availableIndustries
   } = useAlumni();
 
+  const { referralsMap, createReferral } = useReferrals();
+
   const [selectedAlumni, setSelectedAlumni] = useState(null);
+  const [referralModalAlumni, setReferralModalAlumni] = useState(null);
+  const [isSubmittingReferral, setIsSubmittingReferral] = useState(false);
+
+  const handleReferralSubmit = async (data) => {
+    setIsSubmittingReferral(true);
+    try {
+      await createReferral(data);
+    } finally {
+      setIsSubmittingReferral(false);
+    }
+  };
 
   return (
     <div className="pb-14">
@@ -278,10 +293,23 @@ export default function Discover() {
         onClose={() => setSelectedAlumni(null)}
         alumni={selectedAlumni}
         connectionRecord={selectedAlumni ? connectionsMap[selectedAlumni.id] : null}
+        referralRecord={selectedAlumni ? referralsMap[selectedAlumni.id] : null}
         currentUserId={user?.id}
         onSendRequest={(id) => handleSendRequest(id)}
         onCancelRequest={(connId, otherId) => handleCancelRequest(connId, otherId)}
         onAcceptRequest={(connId, otherId) => handleAcceptRequest(connId, otherId)}
+        onRequestReferral={(alumni) => {
+          setSelectedAlumni(null);
+          setReferralModalAlumni(alumni);
+        }}
+      />
+
+      <RequestReferralModal
+        isOpen={!!referralModalAlumni}
+        onClose={() => setReferralModalAlumni(null)}
+        alumni={referralModalAlumni}
+        onSubmit={handleReferralSubmit}
+        isSubmitting={isSubmittingReferral}
       />
     </div>
   );

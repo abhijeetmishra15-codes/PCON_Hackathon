@@ -124,6 +124,10 @@ CREATE TABLE IF NOT EXISTS referral_requests (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     opportunity_id UUID REFERENCES opportunities(id) ON DELETE CASCADE,
     student_id UUID REFERENCES student_profiles(id) ON DELETE CASCADE,
+    alumni_id UUID REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+    company_name VARCHAR,
+    job_title VARCHAR,
+    job_url TEXT,
     status referral_status DEFAULT 'pending',
     pitch_message TEXT NOT NULL,
     resume_url TEXT NOT NULL,
@@ -368,7 +372,6 @@ CREATE TRIGGER on_connection_request
   EXECUTE FUNCTION notify_on_connection_request();
 
 
--- D. Notification Generator for Referrals
 CREATE OR REPLACE FUNCTION notify_on_referral_request()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -379,17 +382,23 @@ DECLARE
   target_author_id UUID;
 BEGIN
   IF NEW.status = 'pending' THEN
-      SELECT author_id INTO target_author_id FROM public.opportunities WHERE id = NEW.opportunity_id;
+      IF NEW.alumni_id IS NOT NULL THEN
+        target_author_id := NEW.alumni_id;
+      ELSE
+        SELECT author_id INTO target_author_id FROM public.opportunities WHERE id = NEW.opportunity_id;
+      END IF;
       
-      INSERT INTO public.notifications (user_id, actor_id, action_type, entity_type, entity_id, content)
-      VALUES (
-        target_author_id,
-        NEW.student_id,
-        'referral_request',
-        'referral',
-        NEW.id,
-        'You have a new referral request'
-      );
+      IF target_author_id IS NOT NULL THEN
+        INSERT INTO public.notifications (user_id, actor_id, action_type, entity_type, entity_id, content)
+        VALUES (
+          target_author_id,
+          NEW.student_id,
+          'referral_request',
+          'referral',
+          NEW.id,
+          'You have a new referral request'
+        );
+      END IF;
   END IF;
   RETURN NEW;
 END;
@@ -465,10 +474,12 @@ CREATE POLICY "Authors can manage opportunity skills" ON opportunity_skills FOR 
 -- Referral Requests
 CREATE POLICY "Users can view relevant referrals" ON referral_requests FOR SELECT USING (
     auth.uid() = student_id OR 
+    auth.uid() = alumni_id OR
     EXISTS (SELECT 1 FROM opportunities WHERE id = referral_requests.opportunity_id AND author_id = auth.uid())
 );
 CREATE POLICY "Students can insert referral requests" ON referral_requests FOR INSERT WITH CHECK (auth.uid() = student_id);
 CREATE POLICY "Alumni can update referral status" ON referral_requests FOR UPDATE USING (
+    auth.uid() = alumni_id OR
     EXISTS (SELECT 1 FROM opportunities WHERE id = referral_requests.opportunity_id AND author_id = auth.uid())
 );
 

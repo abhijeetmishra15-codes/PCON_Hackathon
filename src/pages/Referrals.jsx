@@ -1,269 +1,262 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Briefcase,
-  MapPin,
-  DollarSign,
-  Clock,
-  ChevronRight,
-  CheckCircle2,
-  Bookmark,
+  Briefcase, MapPin, Building2, ExternalLink,
+  CheckCircle2, XCircle, Clock, Search, FileText
 } from 'lucide-react';
-import { Card, Button, Badge, Avatar } from '../components/ui';
+import { Card, Button, Badge, Avatar, Input } from '../components/ui';
+import { useAuth } from '../contexts/AuthContext';
+import { useReferrals } from '../hooks/useReferrals';
 import { cn } from '../utils/cn';
 
 export default function Referrals() {
-  const [activeTab, setActiveTab] = useState('opportunities');
+  const { user } = useAuth();
+  const {
+    incomingReferrals,
+    outgoingReferrals,
+    loading,
+    approveReferral,
+    rejectReferral,
+    completeReferral,
+    cancelReferral
+  } = useReferrals();
 
-  const opportunities = [
-    {
-      id: 1,
-      role: 'Frontend Engineer Intern',
-      company: 'Linear',
-      location: 'San Francisco, CA',
-      type: 'Internship',
-      salary: '$8k – $10k / mo',
-      posted: '2d ago',
-      match: '95%',
-      alumniCount: 4,
-      logo: 'https://logo.clearbit.com/linear.app',
-    },
-    {
-      id: 2,
-      role: 'Product Designer',
-      company: 'Stripe',
-      location: 'Remote',
-      type: 'Full-time',
-      salary: '$130k – $180k',
-      posted: '5d ago',
-      match: '88%',
-      alumniCount: 12,
-      logo: 'https://logo.clearbit.com/stripe.com',
-    },
-  ];
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState('pending');
 
-  const applications = [
-    {
-      id: 1,
-      role: 'Software Engineer New Grad',
-      company: 'Apple',
-      status: 'Interview Scheduled',
-      date: 'Oct 26, 2026',
-      referrer: 'Michael Chen',
-      logo: 'https://logo.clearbit.com/apple.com',
-    },
-  ];
+  const isStudent = user?.role === 'student';
+  const referrals = isStudent ? outgoingReferrals : incomingReferrals;
 
-  const timelineSteps = ['Requested', 'Referred', 'Applied', 'Interview', 'Offer'];
+  const filteredReferrals = referrals.filter(r => {
+    const searchLower = searchQuery.toLowerCase();
+    const matchCompany = r.company_name?.toLowerCase().includes(searchLower);
+    const matchRole = r.job_title?.toLowerCase().includes(searchLower);
+    const matchPerson = isStudent 
+      ? r.alumni?.full_name?.toLowerCase().includes(searchLower)
+      : r.student?.full_name?.toLowerCase().includes(searchLower);
+    return matchCompany || matchRole || matchPerson;
+  });
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'pending':
+        return <Badge variant="warning" className="bg-orange-500/10 text-orange-600 border border-orange-500/20">Pending</Badge>;
+      case 'reviewing':
+        return <Badge variant="primary" className="bg-blue-500/10 text-blue-600 border border-blue-500/20">Reviewing</Badge>;
+      case 'referred':
+        return <Badge variant="success" className="bg-green-500/10 text-green-600 border border-green-500/20">Referred</Badge>;
+      case 'rejected':
+        return <Badge variant="danger" className="bg-red-500/10 text-red-600 border border-red-500/20">Rejected</Badge>;
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
+
+  const pending = filteredReferrals.filter(r => r.status === 'pending');
+  const active = filteredReferrals.filter(r => r.status === 'reviewing');
+  const completed = filteredReferrals.filter(r => r.status === 'referred' || r.status === 'rejected');
+
+  const displayList = activeTab === 'pending' ? pending : activeTab === 'active' ? active : completed;
 
   return (
     <div className="pb-14">
       {/* Header */}
       <div className="mb-7">
         <h1 className="text-[30px] font-extrabold tracking-tight text-text-main mb-1">
-          Referral Portal
+          {isStudent ? 'My Referral Requests' : 'Incoming Referrals'}
         </h1>
         <p className="text-[14px] text-text-secondary">
-          Get referred by alumni to top companies.
+          {isStudent 
+            ? 'Track your referral requests to alumni.' 
+            : 'Manage referral requests from students.'}
         </p>
       </div>
 
-      {/* Segmented tabs */}
-      <div className="flex p-1 bg-secondary rounded-xl mb-7 w-max border border-border/60">
-        {[
-          { key: 'opportunities', label: 'Opportunities' },
-          { key: 'tracking', label: 'My Applications' },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={cn(
-              'px-5 py-2 text-[13px] font-semibold rounded-lg transition-all duration-150',
-              activeTab === tab.key
-                ? 'bg-white shadow-soft text-text-main'
-                : 'text-text-secondary hover:text-text-main'
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6 justify-between items-start sm:items-center">
+        {/* Segmented tabs */}
+        <div className="flex p-1 bg-secondary rounded-xl w-max border border-border/60">
+          {[
+            { key: 'pending', label: `Pending (${pending.length})` },
+            { key: 'active', label: `Active (${active.length})` },
+            { key: 'completed', label: `History (${completed.length})` },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={cn(
+                'px-5 py-2 text-[13px] font-semibold rounded-lg transition-all duration-150',
+                activeTab === tab.key
+                  ? 'bg-white shadow-soft text-text-main'
+                  : 'text-text-secondary hover:text-text-main'
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="w-full sm:w-72">
+          <Input
+            placeholder="Search company, role, name..."
+            leftIcon={<Search size={16} />}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="bg-white"
+          />
+        </div>
       </div>
 
-      {activeTab === 'opportunities' ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-4">
-            {opportunities.map((job, i) => (
-              <motion.div
-                key={job.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.07 }}
-              >
-                <Card hover className="p-5">
-                  <div className="flex gap-4">
-                    {/* Logo */}
-                    <div className="w-14 h-14 rounded-2xl border border-border shadow-soft flex items-center justify-center bg-white shrink-0 p-3">
-                      <img src={job.logo} alt={job.company} className="w-full h-full object-contain" />
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      {/* Title row */}
-                      <div className="flex items-start justify-between gap-3 mb-1">
-                        <div>
-                          <h3 className="text-[15px] font-bold text-text-main leading-tight">{job.role}</h3>
-                          <p className="text-[13px] font-semibold text-text-secondary mt-0.5">{job.company}</p>
-                        </div>
-                        <Badge variant="success" className="shrink-0 bg-success/10 text-success border border-success/20">
-                          {job.match} Match
-                        </Badge>
-                      </div>
-
-                      {/* Meta */}
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-[12.5px] text-text-secondary mt-3 mb-4">
-                        <span className="flex items-center gap-1.5">
-                          <MapPin size={13} className="text-primary/60" /> {job.location}
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <Briefcase size={13} className="text-primary/60" /> {job.type}
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <DollarSign size={13} className="text-primary/60" /> {job.salary}
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <Clock size={13} className="text-primary/60" /> {job.posted}
-                        </span>
-                      </div>
-
-                      {/* Footer */}
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3.5 border-t border-border">
-                        <div className="flex items-center gap-2">
-                          <div className="flex -space-x-1.5">
-                            <Avatar size="sm" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=32&h=32" className="border-2 border-white" />
-                            <Avatar size="sm" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=32&h=32" className="border-2 border-white" />
-                          </div>
-                          <span className="text-[12px] text-text-secondary">
-                            <span className="font-semibold text-text-main">{job.alumniCount} alumni</span> work here
-                          </span>
-                        </div>
-                        <div className="flex gap-2 w-full sm:w-auto">
-                          <button className="p-2 rounded-lg text-text-secondary hover:text-primary hover:bg-primary/8 transition-colors border border-border">
-                            <Bookmark size={16} />
-                          </button>
-                          <Button
-                            className="flex-1 sm:flex-none h-9 text-[13px] bg-accent hover:bg-accent-hover focus:ring-accent shadow-[0_2px_8px_rgba(251,146,60,0.30)]"
-                            rightIcon={<ChevronRight size={15} />}
-                          >
-                            Request Referral
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {[1,2,3,4].map(i => (
+            <Card key={i} className="h-48 animate-pulse bg-white p-5 border-border" />
+          ))}
+        </div>
+      ) : displayList.length === 0 ? (
+        <div className="text-center py-16 bg-white rounded-2xl border border-border">
+          <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+            <Briefcase className="text-text-secondary w-8 h-8" />
           </div>
-
-          {/* Right sidebar */}
-          <div>
-            <Card
-              className="p-6 border-none text-white"
-              style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #FB923C 100%)' }}
-            >
-              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-4">
-                <Briefcase size={20} className="text-white" />
-              </div>
-              <h3 className="text-[17px] font-bold mb-2 leading-tight">Want to stand out?</h3>
-              <p className="text-[13px] text-white/85 mb-5 leading-relaxed">
-                Use our AI Assistant to tailor your resume and craft a personalized referral message.
-              </p>
-              <Button variant="secondary" className="w-full text-primary bg-white hover:bg-white/90 font-semibold">
-                Open AI Assistant
-              </Button>
-            </Card>
-          </div>
+          <h2 className="text-xl font-bold text-text-main mb-2">No {activeTab} requests</h2>
+          <p className="text-text-secondary">You don't have any {activeTab} referral requests.</p>
         </div>
       ) : (
-        <div className="space-y-4 max-w-4xl">
-          {applications.map((app, i) => (
-            <motion.div
-              key={app.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.07 }}
-            >
-              <Card className="p-6">
-                {/* App header */}
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl border border-border shadow-soft flex items-center justify-center p-2 bg-white">
-                      <img src={app.logo} alt={app.company} className="w-full h-full object-contain" />
-                    </div>
-                    <div>
-                      <h3 className="text-[15px] font-bold text-text-main">{app.role}</h3>
-                      <p className="text-[13px] font-medium text-text-secondary">{app.company}</p>
-                    </div>
-                  </div>
-                  <Badge variant="primary" className="bg-primary/10 text-primary border border-primary/20">
-                    {app.status}
-                  </Badge>
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <AnimatePresence mode="popLayout">
+            {displayList.map((req, i) => {
+              const person = isStudent ? req.alumni : req.student;
+              const dateObj = new Date(req.created_at);
+              const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
-                {/* Timeline */}
-                <div className="relative px-2 pt-6">
-                  {/* Track line */}
-                  <div className="absolute top-[38px] left-[32px] right-[32px] h-0.5 bg-secondary" />
-                  <div
-                    className="absolute top-[38px] left-[32px] h-0.5 bg-gradient-to-r from-primary to-accent transition-all"
-                    style={{ width: `${(3 / (timelineSteps.length - 1)) * 100}%` }}
-                  />
-
-                  <div className="relative flex justify-between z-10">
-                    {timelineSteps.map((step, idx) => {
-                      const done = idx <= 3;
-                      return (
-                        <div key={idx} className="flex flex-col items-center gap-2">
-                          <div className={cn(
-                            'w-9 h-9 rounded-full flex items-center justify-center shadow-sm border-2 transition-colors',
-                            done
-                              ? 'bg-primary border-primary text-white'
-                              : 'bg-white border-border text-text-secondary/40'
-                          )}>
-                            {done
-                              ? <CheckCircle2 size={16} />
-                              : <div className="w-2 h-2 rounded-full bg-border" />
+              return (
+                <motion.div
+                  key={req.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Card className="p-6 flex flex-col h-full bg-white">
+                    {/* Header */}
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Avatar
+                          src={person?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(person?.full_name || 'U')}&background=random`}
+                          size="md"
+                          className="border border-border/50 shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <h3 className="text-[15px] font-bold text-text-main truncate">
+                            {person?.full_name || 'Unknown User'}
+                          </h3>
+                          <p className="text-[12.5px] text-text-secondary truncate">
+                            {isStudent 
+                              ? `${person?.alumni_profile?.job_role || 'Alumni'} @ ${person?.alumni_profile?.company || 'Company'}` 
+                              : `${person?.department || 'Student'} · Class of ${person?.graduation_year || 'N/A'}`
                             }
-                          </div>
-                          <span className={cn(
-                            'text-[11px] font-semibold whitespace-nowrap',
-                            done ? 'text-text-main' : 'text-text-secondary/50'
-                          )}>
-                            {step}
-                          </span>
+                          </p>
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Referrer info */}
-                <div className="mt-7 p-4 bg-secondary/50 rounded-xl flex items-center justify-between border border-border/60">
-                  <div className="flex items-center gap-3">
-                    <Avatar
-                      size="sm"
-                      fallback={app.referrer.charAt(0)}
-                      className="bg-primary/10 text-primary font-bold"
-                    />
-                    <div>
-                      <div className="text-[13px] font-semibold text-text-main">Referred by {app.referrer}</div>
-                      <div className="text-[11px] text-text-secondary">Next: Interview on {app.date}</div>
+                      </div>
+                      <div className="shrink-0 pl-3">
+                        {getStatusBadge(req.status)}
+                      </div>
                     </div>
-                  </div>
-                  <Button variant="outline" size="sm" className="bg-white">View Details</Button>
-                </div>
-              </Card>
-            </motion.div>
-          ))}
+
+                    {/* Job Details */}
+                    <div className="bg-secondary/40 rounded-xl p-4 mb-4 border border-border/50">
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <div className="flex items-center gap-1.5 text-text-main font-semibold text-[14px]">
+                              <Building2 size={14} className="text-primary/70" />
+                              {req.company_name}
+                            </div>
+                            <div className="flex items-center gap-1.5 text-text-secondary text-[13px] mt-0.5">
+                              <Briefcase size={14} className="text-primary/70" />
+                              {req.job_title}
+                            </div>
+                          </div>
+                          {req.job_url && (
+                            <a href={req.job_url} target="_blank" rel="noreferrer" className="shrink-0 p-2 bg-white rounded-lg border border-border hover:border-primary/50 text-text-secondary hover:text-primary transition-colors">
+                              <ExternalLink size={16} />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Pitch Message */}
+                    <div className="mb-5 flex-1">
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-text-secondary mb-1.5">Pitch Message</div>
+                      <p className="text-[13.5px] leading-relaxed text-text-main line-clamp-3">
+                        "{req.pitch_message}"
+                      </p>
+                    </div>
+
+                    {/* Footer Actions */}
+                    <div className="mt-auto pt-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <div className="flex items-center gap-4 text-[12px] text-text-secondary w-full sm:w-auto">
+                        <span className="flex items-center gap-1.5">
+                          <Clock size={14} /> {dateStr}
+                        </span>
+                        <a href={req.resume_url} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-primary hover:underline font-medium">
+                          <FileText size={14} /> View Resume
+                        </a>
+                      </div>
+
+                      <div className="flex items-center gap-2 w-full sm:w-auto">
+                        {isStudent ? (
+                          req.status === 'pending' && (
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="w-full sm:w-auto text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+                              onClick={() => cancelReferral(req.id)}
+                            >
+                              Cancel Request
+                            </Button>
+                          )
+                        ) : (
+                          <>
+                            {req.status === 'pending' && (
+                              <>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  className="w-full sm:w-auto text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+                                  onClick={() => rejectReferral(req.id)}
+                                >
+                                  Reject
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  className="w-full sm:w-auto bg-primary text-white"
+                                  onClick={() => approveReferral(req.id)}
+                                >
+                                  Approve
+                                </Button>
+                              </>
+                            )}
+                            {req.status === 'reviewing' && (
+                              <Button 
+                                size="sm" 
+                                className="w-full sm:w-auto bg-success hover:bg-success/90 text-white"
+                                leftIcon={<CheckCircle2 size={15} />}
+                                onClick={() => completeReferral(req.id)}
+                              >
+                                Mark as Referred
+                              </Button>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
         </div>
       )}
     </div>
