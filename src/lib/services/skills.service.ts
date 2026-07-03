@@ -33,8 +33,8 @@ export const SkillsService = {
     return (data || []).map((row: any) => row.skills).filter(Boolean);
   },
 
-  // Add a skill to user
-  async addSkillToUser(userId: string, skillName: string): Promise<Skill> {
+  // Get or create a skill
+  async getOrCreateSkill(skillName: string): Promise<Skill> {
     const name = skillName.trim();
     if (!name) throw new Error('Skill name cannot be empty');
 
@@ -65,6 +65,13 @@ export const SkillsService = {
       skillId = newSkill.id;
       finalSkillName = newSkill.name;
     }
+
+    return { id: skillId, name: finalSkillName };
+  },
+
+  // Add a skill to user
+  async addSkillToUser(userId: string, skillName: string): Promise<Skill> {
+    const skill = await this.getOrCreateSkill(skillName);
 
     // 3. Link the skill to the user
     const { error: linkError } = await supabase

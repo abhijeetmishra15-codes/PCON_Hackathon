@@ -35,7 +35,7 @@ export const ResumeService = {
       .from('resume_analysis')
       .select('overall_score, feedback_json')
       .eq('resume_id', resume.id)
-      .single();
+      .maybeSingle();
 
     return { resume, analysis: analysis || null };
   },

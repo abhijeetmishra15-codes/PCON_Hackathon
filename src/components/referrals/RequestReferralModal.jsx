@@ -6,7 +6,7 @@ import { Button, Input } from '../ui';
 import { useResume } from '../../hooks/useResume';
 import { useNavigate } from 'react-router-dom';
 
-export default function RequestReferralModal({ isOpen, onClose, alumni, onSubmit, isSubmitting }) {
+export default function RequestReferralModal({ isOpen, onClose, alumni, initialData, onSubmit, isSubmitting }) {
   const navigate = useNavigate();
   const { resume, isLoading: isLoadingResume } = useResume();
   const [mounted, setMounted] = useState(false);
@@ -29,11 +29,13 @@ export default function RequestReferralModal({ isOpen, onClose, alumni, onSubmit
     if (isOpen) {
       setFormData(prev => ({
         ...prev,
-        companyName: alumni?.company || '',
+        companyName: initialData?.companyName || alumni?.company || '',
+        jobTitle: initialData?.jobTitle || '',
+        jobUrl: initialData?.jobUrl || ''
       }));
       setError('');
     }
-  }, [isOpen, alumni]);
+  }, [isOpen, alumni, initialData]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

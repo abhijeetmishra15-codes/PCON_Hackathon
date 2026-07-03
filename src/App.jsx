@@ -15,6 +15,8 @@ import Referrals from './pages/Referrals';
 import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 import Network from './pages/Network';
+import Opportunities from './pages/Opportunities';
+import MyOpportunities from './pages/MyOpportunities';
 import AdminDashboard from './pages/AdminDashboard';
 import SupabaseTest from './pages/SupabaseTest';
 
@@ -46,6 +48,8 @@ function App() {
               <Route path="/referrals" element={<Referrals />} />
               <Route path="/assistant" element={<AIAssistant />} />
               <Route path="/network" element={<Network />} />
+              <Route path="/opportunities" element={<Opportunities />} />
+              <Route path="/my-opportunities" element={<MyOpportunities />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/settings" element={<Profile />} />
               <Route path="/admin" element={<AdminDashboard />} />

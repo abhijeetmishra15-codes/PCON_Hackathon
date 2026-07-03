@@ -10,23 +10,35 @@ import {
   Settings,
   GraduationCap,
   ShieldCheck,
-  LogOut
+  LogOut,
+  Building2
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function Sidebar({ isOpen, onClose }) {
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard' },
     { icon: Search, label: 'Discover', to: '/discover' },
+    { icon: Building2, label: 'Opportunities', to: '/opportunities' },
     { icon: Briefcase, label: 'Referrals', to: '/referrals' },
     { icon: Users, label: 'Network', to: '/network' },
     { icon: MessageSquare, label: 'AI Assistant', to: '/assistant' },
     { icon: Trophy, label: 'Leaderboard', to: '/leaderboard' },
   ];
+
+  // Add "My Opportunities" dynamically if user is an alumni
+  const role = user?.user_metadata?.role;
+  if (role === 'alumni') {
+    // Insert after Opportunities
+    const oppIndex = navItems.findIndex(i => i.to === '/opportunities');
+    if (oppIndex !== -1) {
+      navItems.splice(oppIndex + 1, 0, { icon: Briefcase, label: 'My Opportunities', to: '/my-opportunities' });
+    }
+  }
 
   const bottomItems = [
     { icon: ShieldCheck, label: 'Admin', to: '/admin' },
