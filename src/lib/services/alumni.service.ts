@@ -40,7 +40,6 @@ export const AlumniService = {
         )
       `)
       .eq('role', 'alumni')
-      .eq('alumni_profiles.is_verified', true)
       .order('created_at', { ascending: false });
 
     if (error) {

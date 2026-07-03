@@ -317,13 +317,14 @@ BEGIN
   IF extracted_role = 'student' THEN
     INSERT INTO public.student_profiles (id) VALUES (NEW.id);
   ELSIF extracted_role = 'alumni' THEN
-    INSERT INTO public.alumni_profiles (id, company, job_role, industry, years_of_experience) 
+    INSERT INTO public.alumni_profiles (id, company, job_role, industry, years_of_experience, is_verified) 
     VALUES (
         NEW.id, 
         COALESCE(NULLIF(NEW.raw_user_meta_data->>'company', ''), 'TBD'),
         COALESCE(NULLIF(NEW.raw_user_meta_data->>'job_role', ''), 'TBD'),
         COALESCE(NULLIF(NEW.raw_user_meta_data->>'industry', ''), 'TBD'),
-        0
+        0,
+        true
     );
   END IF;
   

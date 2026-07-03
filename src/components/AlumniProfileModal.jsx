@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Building2, Briefcase, GraduationCap, 
@@ -6,10 +7,26 @@ import {
 } from 'lucide-react';
 import { Button, Badge, Avatar } from './ui';
 
-export default function AlumniProfileModal({ isOpen, onClose, alumni }) {
-  if (!alumni) return null;
+export default function AlumniProfileModal({ 
+  isOpen, 
+  onClose, 
+  alumni,
+  connectionRecord,
+  currentUserId,
+  onSendRequest,
+  onCancelRequest,
+  onAcceptRequest
+}) {
+  const [mounted, setMounted] = useState(false);
 
-  return (
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!alumni) return null;
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -24,11 +41,11 @@ export default function AlumniProfileModal({ isOpen, onClose, alumni }) {
 
           {/* Modal Content */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, x: "-50%", y: "-40%" }}
+            animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
+            exit={{ opacity: 0, scale: 0.95, x: "-50%", y: "-40%" }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-white rounded-2xl shadow-xl z-[101] overflow-hidden max-h-[90vh] flex flex-col"
+            className="fixed left-1/2 top-1/2 w-full max-w-2xl bg-white rounded-2xl shadow-xl z-[101] overflow-hidden max-h-[90vh] flex flex-col"
           >
             {/* Header / Banner */}
             <div className="h-32 bg-primary/10 relative shrink-0">
@@ -50,23 +67,80 @@ export default function AlumniProfileModal({ isOpen, onClose, alumni }) {
                   className="w-24 h-24 sm:w-32 sm:h-32 border-4 border-white shadow-soft shrink-0 bg-white"
                 />
                 
-                <div className="pt-2 sm:pt-20 flex-1 w-full">
+                <div className="pt-2 sm:pt-20 flex-1 min-w-0">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
+                    <div className="min-w-0">
                       <h2 className="text-2xl sm:text-3xl font-extrabold text-text-main flex items-center gap-2">
-                        {alumni.full_name}
+                        <span className="truncate">{alumni.full_name}</span>
                         {alumni.is_verified && (
-                          <CheckCircle size={20} className="text-success fill-success/10" />
+                          <CheckCircle size={20} className="text-success fill-success/10 shrink-0" />
                         )}
                       </h2>
-                      <p className="text-[15px] text-text-secondary mt-1">{alumni.job_role} at <span className="font-semibold text-text-main">{alumni.company}</span></p>
+                      <p className="text-[15px] text-text-secondary mt-1 truncate">{alumni.job_role} at <span className="font-semibold text-text-main">{alumni.company}</span></p>
                     </div>
                     
                     {/* Action Buttons */}
                     <div className="flex gap-2 shrink-0">
-                      <Button className="h-10 px-5 rounded-full flex items-center gap-2 shadow-btn-primary">
-                        <UserPlus size={16} /> Connect
-                      </Button>
+                      {(() => {
+                        if (alumni.id === currentUserId) {
+                          return (
+                            <Button disabled className="h-10 px-5 rounded-full flex items-center gap-2 bg-gray-100 text-gray-400 border-none">
+                              You
+                            </Button>
+                          );
+                        }
+
+                        if (!connectionRecord) {
+                          return (
+                            <Button 
+                              onClick={() => onSendRequest?.(alumni.id)}
+                              className="h-10 px-5 rounded-full flex items-center gap-2 shadow-btn-primary"
+                            >
+                              <UserPlus size={16} /> Connect
+                            </Button>
+                          );
+                        }
+
+                        if (connectionRecord.status === 'accepted') {
+                          return (
+                            <Button disabled className="h-10 px-5 rounded-full flex items-center gap-2 bg-success/10 text-success border-success/20">
+                              <CheckCircle size={16} /> Connected
+                            </Button>
+                          );
+                        }
+
+                        if (connectionRecord.status === 'pending') {
+                          if (connectionRecord.requester_id === currentUserId) {
+                            return (
+                              <Button 
+                                variant="outline"
+                                onClick={() => onCancelRequest?.(connectionRecord.id, alumni.id)}
+                                className="h-10 px-5 rounded-full flex items-center gap-2 text-text-secondary"
+                              >
+                                <X size={16} /> Cancel Request
+                              </Button>
+                            );
+                          } else {
+                            return (
+                              <Button 
+                                onClick={() => onAcceptRequest?.(connectionRecord.id, alumni.id)}
+                                className="h-10 px-5 rounded-full flex items-center gap-2 bg-secondary text-text-main border-border hover:bg-secondary/80"
+                              >
+                                <CheckCircle size={16} /> Accept Request
+                              </Button>
+                            );
+                          }
+                        }
+
+                        return (
+                          <Button 
+                            onClick={() => onSendRequest?.(alumni.id)}
+                            className="h-10 px-5 rounded-full flex items-center gap-2 shadow-btn-primary"
+                          >
+                            <UserPlus size={16} /> Connect
+                          </Button>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>
@@ -151,6 +225,7 @@ export default function AlumniProfileModal({ isOpen, onClose, alumni }) {
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

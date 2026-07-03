@@ -13,9 +13,19 @@ import {
 } from 'lucide-react';
 import { Card, Button, Avatar, Badge, Input } from '../components/ui';
 import { useAlumni } from '../hooks/useAlumni';
+import { useConnections } from '../hooks/useConnections';
+import { useAuth } from '../contexts/AuthContext';
 import AlumniProfileModal from '../components/AlumniProfileModal';
 
 export default function Discover() {
+  const { user } = useAuth();
+  const { 
+    connectionsMap,
+    handleSendRequest,
+    handleAcceptRequest,
+    handleCancelRequest,
+  } = useConnections();
+
   const { 
     alumni, 
     isLoading, 
@@ -191,7 +201,62 @@ export default function Discover() {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button className="flex-1 h-9 text-[13px]">Connect</Button>
+                    {(() => {
+                      // Prevent showing connect button for self
+                      if (person.id === user?.id) {
+                        return <Button disabled className="flex-1 h-9 text-[13px] bg-gray-100 text-gray-400 border-none">You</Button>;
+                      }
+                      
+                      const conn = connectionsMap[person.id];
+                      
+                      if (!conn) {
+                        return (
+                          <Button 
+                            className="flex-1 h-9 text-[13px]" 
+                            onClick={() => handleSendRequest(person.id)}
+                          >
+                            Connect
+                          </Button>
+                        );
+                      }
+                      
+                      if (conn.status === 'accepted') {
+                        return (
+                          <Button disabled className="flex-1 h-9 text-[13px] bg-success/10 text-success border-success/20 hover:bg-success/10">
+                            Connected
+                          </Button>
+                        );
+                      }
+                      
+                      if (conn.status === 'pending') {
+                        if (conn.requester_id === user?.id) {
+                          return (
+                            <Button 
+                              variant="outline" 
+                              className="flex-1 h-9 text-[13px] text-text-secondary"
+                              onClick={() => handleCancelRequest(conn.id, person.id)}
+                            >
+                              Cancel Request
+                            </Button>
+                          );
+                        } else {
+                          return (
+                            <Button 
+                              className="flex-1 h-9 text-[13px] bg-secondary text-text-main border-border hover:bg-secondary/80"
+                              onClick={() => handleAcceptRequest(conn.id, person.id)}
+                            >
+                              Accept Request
+                            </Button>
+                          );
+                        }
+                      }
+                      
+                      return (
+                        <Button className="flex-1 h-9 text-[13px]" onClick={() => handleSendRequest(person.id)}>
+                          Connect
+                        </Button>
+                      );
+                    })()}
                     <Button 
                       variant="ghost" 
                       onClick={() => setSelectedAlumni(person)}
@@ -212,6 +277,11 @@ export default function Discover() {
         isOpen={!!selectedAlumni}
         onClose={() => setSelectedAlumni(null)}
         alumni={selectedAlumni}
+        connectionRecord={selectedAlumni ? connectionsMap[selectedAlumni.id] : null}
+        currentUserId={user?.id}
+        onSendRequest={(id) => handleSendRequest(id)}
+        onCancelRequest={(connId, otherId) => handleCancelRequest(connId, otherId)}
+        onAcceptRequest={(connId, otherId) => handleAcceptRequest(connId, otherId)}
       />
     </div>
   );
