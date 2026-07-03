@@ -1,25 +1,46 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Mail, Building2, Briefcase, GraduationCap, 
-  MapPin, Link as LinkIcon, Camera, Plus, FileText, Loader2, AlertCircle, CheckCircle
+  MapPin, Link as LinkIcon, Camera, Plus, FileText, Loader2, AlertCircle, CheckCircle,
+  X, Upload, Download, Eye, Trash2, ShieldCheck, FileSearch
 } from 'lucide-react';
 import { Card, Button, Input, Badge, Avatar } from '../components/ui';
 import { useProfile } from '../hooks/useProfile';
+import { useSkills } from '../hooks/useSkills';
+import { useResume } from '../hooks/useResume';
 
 export default function Profile() {
-  const { profile, subProfile, isLoading: isFetching, error: fetchError, updateProfile, uploadAvatar } = useProfile();
+  const { profile, subProfile, isLoading: isFetchingProfile, error: fetchProfileError, updateProfile, uploadAvatar } = useProfile();
+  const { 
+    skills, isLoading: isFetchingSkills, addSkill, removeSkill, 
+    searchSkills, searchResults, isSearching 
+  } = useSkills();
+  const { 
+    resume, analysis, isLoading: isFetchingResume, isUploading: isUploadingResume, 
+    uploadResume, deleteResume, getDownloadUrl 
+  } = useResume();
   
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState(null);
   
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [avatarError, setAvatarError] = useState(null);
   
-  const fileInputRef = useRef(null);
+  const avatarInputRef = useRef(null);
+  const resumeInputRef = useRef(null);
   
   // Local state for edits
   const [formData, setFormData] = useState({});
+
+  // Skill input state
+  const [skillInput, setSkillInput] = useState('');
+  const [showSkillDropdown, setShowSkillDropdown] = useState(false);
+  const [skillError, setSkillError] = useState(null);
+
+  // Resume state
+  const [resumeActionError, setResumeActionError] = useState(null);
+  const [resumeActionSuccess, setResumeActionSuccess] = useState(null);
 
   useEffect(() => {
     if (profile) {
@@ -78,27 +99,114 @@ export default function Profile() {
   };
 
   const handleAvatarClick = () => {
-    fileInputRef.current?.click();
+    avatarInputRef.current?.click();
   };
 
-  const handleFileChange = async (e) => {
+  const handleAvatarChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setIsUploading(true);
-    setUploadError(null);
+    setIsUploadingAvatar(true);
+    setAvatarError(null);
     try {
       await uploadAvatar(file);
     } catch (err) {
-      setUploadError(err.message || 'Failed to upload avatar.');
+      setAvatarError(err.message || 'Failed to upload avatar.');
     } finally {
-      setIsUploading(false);
-      // Reset input so they can upload same file again if it failed
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      setIsUploadingAvatar(false);
+      if (avatarInputRef.current) avatarInputRef.current.value = '';
     }
   };
 
-  if (isFetching) {
+  // --- Skills Logic ---
+  const handleSkillInputChange = (e) => {
+    const val = e.target.value;
+    setSkillInput(val);
+    setSkillError(null);
+    if (val.trim()) {
+      searchSkills(val);
+      setShowSkillDropdown(true);
+    } else {
+      setShowSkillDropdown(false);
+    }
+  };
+
+  const handleAddSkill = async (skillName) => {
+    try {
+      await addSkill(skillName);
+      setSkillInput('');
+      setShowSkillDropdown(false);
+      setSkillError(null);
+    } catch (err) {
+      setSkillError(err.message);
+    }
+  };
+
+  const handleSkillKeyDown = (e) => {
+    if (e.key === 'Enter' && skillInput.trim()) {
+      e.preventDefault();
+      handleAddSkill(skillInput.trim());
+    }
+  };
+
+  // --- Resume Logic ---
+  const handleResumeClick = () => {
+    resumeInputRef.current?.click();
+  };
+
+  const handleResumeChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setResumeActionError(null);
+    setResumeActionSuccess(null);
+    try {
+      await uploadResume(file);
+      setResumeActionSuccess('Resume uploaded successfully!');
+    } catch (err) {
+      setResumeActionError(err.message || 'Failed to upload resume.');
+    } finally {
+      if (resumeInputRef.current) resumeInputRef.current.value = '';
+    }
+  };
+
+  const handleResumeDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete your resume?')) return;
+    setResumeActionError(null);
+    setResumeActionSuccess(null);
+    try {
+      await deleteResume();
+      setResumeActionSuccess('Resume deleted successfully.');
+    } catch (err) {
+      setResumeActionError(err.message || 'Failed to delete resume.');
+    }
+  };
+
+  const handleResumeView = async () => {
+    try {
+      const url = await getDownloadUrl();
+      window.open(url, '_blank');
+    } catch (err) {
+      setResumeActionError('Could not open resume.');
+    }
+  };
+
+  const handleResumeDownload = async () => {
+    try {
+      const url = await getDownloadUrl();
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Resume_${profile.full_name.replace(/\s+/g, '_')}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (err) {
+      setResumeActionError('Could not download resume.');
+    }
+  };
+
+
+  if (isFetchingProfile) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -106,12 +214,12 @@ export default function Profile() {
     );
   }
 
-  if (fetchError || !profile) {
+  if (fetchProfileError || !profile) {
     return (
       <div className="text-center py-12">
         <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
         <h2 className="text-xl font-bold text-text-main">Failed to load profile</h2>
-        <p className="text-text-secondary mt-2">{fetchError}</p>
+        <p className="text-text-secondary mt-2">{fetchProfileError}</p>
       </div>
     );
   }
@@ -149,15 +257,15 @@ export default function Profile() {
                 />
                 <button 
                   onClick={handleAvatarClick}
-                  disabled={isUploading}
+                  disabled={isUploadingAvatar}
                   className="absolute bottom-1 right-1 p-1.5 bg-white rounded-full shadow-sm border border-border text-text-secondary hover:text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isUploading ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
+                  {isUploadingAvatar ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
                 </button>
                 <input 
                   type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleFileChange} 
+                  ref={avatarInputRef} 
+                  onChange={handleAvatarChange} 
                   accept="image/jpeg,image/png,image/webp" 
                   className="hidden" 
                 />
@@ -174,8 +282,8 @@ export default function Profile() {
                     </div>
                   )}
                 </div>
-                {uploadError && (
-                  <p className="text-red-500 text-xs mt-2 font-medium">{uploadError}</p>
+                {avatarError && (
+                  <p className="text-red-500 text-xs mt-2 font-medium">{avatarError}</p>
                 )}
               </div>
               <Button 
@@ -256,39 +364,207 @@ export default function Profile() {
               )}
             </div>
 
+            {/* SKILLS SECTION */}
             {role !== 'visitor' && (
               <div className="space-y-4">
                 <h4 className="text-[15px] font-bold text-text-main">Skills</h4>
-                <div className="flex flex-wrap gap-2">
-                  {['React', 'Node.js', 'Python'].map((skill) => (
-                    <Badge key={skill} variant="primary" className="px-3 py-1 text-sm bg-primary/10 text-primary border border-primary/20">
-                      {skill}
-                    </Badge>
-                  ))}
-                  <button className="flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium text-text-secondary border border-dashed border-border hover:border-primary hover:text-primary transition-colors">
-                    <Plus size={14} /> Add Skill
-                  </button>
-                </div>
+                
+                {isFetchingSkills ? (
+                  <div className="flex items-center gap-2 text-text-secondary text-sm">
+                    <Loader2 size={16} className="animate-spin" /> Loading skills...
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2 items-center">
+                    {skills.map((skill) => (
+                      <Badge key={skill.id} variant="primary" className="px-3 py-1 text-sm bg-primary/10 text-primary border border-primary/20 flex items-center gap-1.5 group">
+                        {skill.name}
+                        <button 
+                          onClick={() => removeSkill(skill.id)}
+                          className="hover:bg-primary/20 rounded-full p-0.5 transition-colors text-primary/70 hover:text-primary"
+                        >
+                          <X size={12} />
+                        </button>
+                      </Badge>
+                    ))}
+                    
+                    <div className="relative">
+                      <div className="flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium text-text-secondary border border-dashed border-border hover:border-primary focus-within:border-primary focus-within:text-primary transition-colors bg-white relative z-20">
+                        <Plus size={14} /> 
+                        <input
+                          type="text"
+                          value={skillInput}
+                          onChange={handleSkillInputChange}
+                          onKeyDown={handleSkillKeyDown}
+                          onFocus={() => { if(skillInput.trim()) setShowSkillDropdown(true) }}
+                          onBlur={() => setTimeout(() => setShowSkillDropdown(false), 200)}
+                          placeholder="Add Skill..."
+                          className="bg-transparent border-none outline-none w-24 focus:w-32 transition-all placeholder:text-text-secondary/70 text-text-main"
+                        />
+                      </div>
+
+                      {/* Autocomplete Dropdown */}
+                      <AnimatePresence>
+                        {showSkillDropdown && (
+                          <motion.div 
+                            initial={{ opacity: 0, y: 5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 5 }}
+                            className="absolute top-full left-0 mt-1 w-48 bg-white border border-border rounded-xl shadow-lg z-30 overflow-hidden"
+                          >
+                            {isSearching ? (
+                              <div className="p-3 text-xs text-text-secondary flex items-center gap-2">
+                                <Loader2 size={12} className="animate-spin" /> Searching...
+                              </div>
+                            ) : searchResults.length > 0 ? (
+                              <div className="max-h-48 overflow-y-auto">
+                                {searchResults.map(s => (
+                                  <button
+                                    key={s.id}
+                                    onClick={() => handleAddSkill(s.name)}
+                                    className="w-full text-left px-4 py-2 text-sm text-text-main hover:bg-secondary transition-colors"
+                                  >
+                                    {s.name}
+                                  </button>
+                                ))}
+                                <button
+                                    onClick={() => handleAddSkill(skillInput)}
+                                    className="w-full text-left px-4 py-2 text-sm text-primary hover:bg-primary/5 transition-colors border-t border-border font-medium"
+                                  >
+                                    Add "{skillInput}"
+                                  </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => handleAddSkill(skillInput)}
+                                className="w-full text-left px-4 py-3 text-sm text-primary hover:bg-primary/5 transition-colors font-medium flex items-center gap-2"
+                              >
+                                <Plus size={14} /> Create "{skillInput}"
+                              </button>
+                            )}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                )}
+                {skillError && <p className="text-xs text-red-500 font-medium mt-1">{skillError}</p>}
               </div>
             )}
 
+            {/* RESUME SECTION */}
             {role === 'student' && (
               <div className="mt-8 pt-6 border-t border-border">
-                <h4 className="text-[15px] font-bold text-text-main mb-4">Resume</h4>
-                <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-secondary/50">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                      <FileText size={20} />
-                    </div>
-                    <div>
-                      <p className="text-[14px] font-semibold text-text-main">{profile.full_name.replace(/\s+/g, '_')}_Resume.pdf</p>
-                      <p className="text-[12px] text-text-secondary">Updated 2 days ago • 2.4 MB</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" className="h-8 px-3 text-xs">Update</Button>
-                  </div>
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-[15px] font-bold text-text-main">Resume</h4>
+                  <input 
+                    type="file" 
+                    ref={resumeInputRef}
+                    onChange={handleResumeChange}
+                    accept="application/pdf"
+                    className="hidden"
+                  />
+                  {!resume && !isFetchingResume && (
+                     <Button 
+                        onClick={handleResumeClick} 
+                        isLoading={isUploadingResume}
+                        variant="outline" 
+                        className="h-8 px-3 text-xs"
+                        leftIcon={<Upload size={14} />}
+                      >
+                        Upload Resume
+                      </Button>
+                  )}
                 </div>
+
+                {isFetchingResume ? (
+                  <div className="flex items-center justify-center p-6 rounded-xl border border-dashed border-border bg-secondary/30">
+                    <Loader2 className="w-6 h-6 animate-spin text-text-secondary" />
+                  </div>
+                ) : resume ? (
+                  <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-border bg-secondary/50 gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                          <FileText size={20} />
+                        </div>
+                        <div>
+                          <p className="text-[14px] font-semibold text-text-main truncate max-w-[200px] sm:max-w-xs" title={resume.file_url.split('/').pop()}>
+                            {resume.file_url.split('/').pop()}
+                          </p>
+                          <p className="text-[12px] text-text-secondary flex items-center gap-1.5 mt-0.5">
+                            Uploaded {new Date(resume.created_at).toLocaleDateString()} 
+                            <span className="w-1 h-1 rounded-full bg-border" /> 
+                            PDF
+                            {resume.is_primary && (
+                               <>
+                                <span className="w-1 h-1 rounded-full bg-border" /> 
+                                <span className="text-primary font-medium">Primary</span>
+                               </>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2 shrink-0">
+                        <Button onClick={handleResumeView} variant="ghost" className="h-8 w-8 p-0" title="View"><Eye size={16} /></Button>
+                        <Button onClick={handleResumeDownload} variant="ghost" className="h-8 w-8 p-0" title="Download"><Download size={16} /></Button>
+                        <Button onClick={handleResumeClick} isLoading={isUploadingResume} variant="outline" className="h-8 px-3 text-xs">Replace</Button>
+                        <Button onClick={handleResumeDelete} variant="ghost" className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"><Trash2 size={16} /></Button>
+                      </div>
+                    </div>
+                    
+                    {/* Resume Analysis Widget */}
+                    <div className="p-4 rounded-xl border border-primary/20 bg-primary/5">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
+                           <ShieldCheck size={16} />
+                        </div>
+                        <div>
+                          <h5 className="text-[14px] font-bold text-primary mb-1">AI Resume Analysis</h5>
+                          {analysis ? (
+                             <>
+                               <div className="flex items-baseline gap-2 mb-2">
+                                  <span className="text-2xl font-extrabold text-text-main">{analysis.overall_score}</span>
+                                  <span className="text-xs text-text-secondary font-medium">/ 100 ATS Score</span>
+                               </div>
+                               <p className="text-[13px] text-text-secondary leading-relaxed">
+                                 {analysis.feedback_json?.summary || 'Analysis complete. Great profile!'}
+                               </p>
+                             </>
+                          ) : (
+                             <p className="text-[13px] text-text-secondary leading-relaxed">
+                               Resume analysis will be available after using the <span className="font-semibold text-primary">AI Resume Analyzer</span> tool.
+                             </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center p-8 rounded-xl border border-dashed border-border bg-secondary/30 text-center">
+                    <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-3">
+                      <FileSearch size={24} className="text-text-secondary/60" />
+                    </div>
+                    <p className="text-[14px] font-medium text-text-main mb-1">No resume uploaded</p>
+                    <p className="text-[13px] text-text-secondary mb-4 max-w-sm">
+                      Upload your resume in PDF format (max 5MB) to share with alumni and get AI feedback.
+                    </p>
+                    <Button 
+                      onClick={handleResumeClick} 
+                      isLoading={isUploadingResume}
+                      variant="outline" 
+                      leftIcon={<Upload size={16} />}
+                    >
+                      Browse Files
+                    </Button>
+                  </div>
+                )}
+                
+                {resumeActionError && (
+                  <p className="text-red-500 text-xs mt-3 font-medium flex items-center gap-1.5"><AlertCircle size={14} /> {resumeActionError}</p>
+                )}
+                {resumeActionSuccess && (
+                  <p className="text-success text-xs mt-3 font-medium flex items-center gap-1.5"><CheckCircle size={14} /> {resumeActionSuccess}</p>
+                )}
               </div>
             )}
           </Card>
