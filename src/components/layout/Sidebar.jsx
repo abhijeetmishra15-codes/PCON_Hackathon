@@ -9,6 +9,7 @@ import {
   Trophy,
   Settings,
   GraduationCap,
+  ShieldCheck,
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
@@ -23,6 +24,7 @@ export default function Sidebar({ isOpen, onClose }) {
   ];
 
   const bottomItems = [
+    { icon: ShieldCheck, label: 'Admin', to: '/admin' },
     { icon: Settings, label: 'Settings', to: '/settings' },
   ];
 
