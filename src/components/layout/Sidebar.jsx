@@ -11,7 +11,8 @@ import {
   GraduationCap,
   ShieldCheck,
   LogOut,
-  Building2
+  Building2,
+  Calendar
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../contexts/AuthContext';
@@ -28,6 +29,8 @@ export default function Sidebar({ isOpen, onClose }) {
     { icon: Users, label: 'Network', to: '/network' },
     { icon: MessageSquare, label: 'AI Assistant', to: '/assistant' },
     { icon: Trophy, label: 'Leaderboard', to: '/leaderboard' },
+    { icon: Calendar, label: 'Events', to: '/events' },
+    { icon: Calendar, label: 'My Events', to: '/my-events' },
   ];
 
   // Add "My Opportunities" dynamically if user is an alumni

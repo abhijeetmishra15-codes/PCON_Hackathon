@@ -19,6 +19,8 @@ import Opportunities from './pages/Opportunities';
 import MyOpportunities from './pages/MyOpportunities';
 import AdminDashboard from './pages/AdminDashboard';
 import SupabaseTest from './pages/SupabaseTest';
+import Events from './pages/Events';
+import MyEvents from './pages/MyEvents';
 
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -51,6 +53,8 @@ function App() {
               <Route path="/opportunities" element={<Opportunities />} />
               <Route path="/my-opportunities" element={<MyOpportunities />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/my-events" element={<MyEvents />} />
               <Route path="/settings" element={<Profile />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
