@@ -17,6 +17,7 @@ import { useConnections } from '../hooks/useConnections';
 import { useAuth } from '../contexts/AuthContext';
 import AlumniProfileModal from '../components/AlumniProfileModal';
 import RequestReferralModal from '../components/referrals/RequestReferralModal';
+import FilterModal from '../components/FilterModal';
 import { useReferrals } from '../hooks/useReferrals';
 
 export default function Discover() {
@@ -29,14 +30,16 @@ export default function Discover() {
   } = useConnections();
 
   const { 
-    alumni, 
-    isLoading, 
-    error, 
-    searchQuery, 
-    setSearchQuery,
-    activeIndustryFilter,
-    setActiveIndustryFilter,
-    availableIndustries
+    alumni, isLoading, error, 
+    searchQuery, setSearchQuery,
+    activeIndustryFilter, setActiveIndustryFilter,
+    companyFilter, setCompanyFilter,
+    roleFilter, setRoleFilter,
+    departmentFilter, setDepartmentFilter,
+    batchFilter, setBatchFilter,
+    availableIndustries, availableCompanies,
+    availableRoles, availableDepartments, availableBatches,
+    clearFilters
   } = useAlumni();
 
   const { referralsMap, createReferral } = useReferrals();
@@ -44,6 +47,7 @@ export default function Discover() {
   const [selectedAlumni, setSelectedAlumni] = useState(null);
   const [referralModalAlumni, setReferralModalAlumni] = useState(null);
   const [isSubmittingReferral, setIsSubmittingReferral] = useState(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   const handleReferralSubmit = async (data) => {
     setIsSubmittingReferral(true);
@@ -77,8 +81,16 @@ export default function Discover() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button variant="outline" leftIcon={<SlidersHorizontal size={16} />} className="bg-white shrink-0">
+        <Button 
+          variant="outline" 
+          leftIcon={<SlidersHorizontal size={16} />} 
+          className="bg-white shrink-0"
+          onClick={() => setIsFilterModalOpen(true)}
+        >
           Filters
+          {(companyFilter !== 'All' || roleFilter !== 'All' || departmentFilter !== 'All' || batchFilter !== 'All') && (
+            <span className="ml-2 w-2.5 h-2.5 rounded-full bg-primary shadow-sm" />
+          )}
         </Button>
       </div>
 
@@ -138,7 +150,7 @@ export default function Discover() {
           </div>
           <h2 className="text-xl font-bold text-text-main mb-2">No alumni found</h2>
           <p className="text-text-secondary">Try adjusting your search or filters to find more people.</p>
-          <Button variant="outline" className="mt-6" onClick={() => { setSearchQuery(''); setActiveIndustryFilter('All'); }}>
+          <Button variant="outline" className="mt-6" onClick={clearFilters}>
             Clear Filters
           </Button>
         </div>
@@ -310,6 +322,20 @@ export default function Discover() {
         alumni={referralModalAlumni}
         onSubmit={handleReferralSubmit}
         isSubmitting={isSubmittingReferral}
+      />
+
+      <FilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        companyFilter={companyFilter} setCompanyFilter={setCompanyFilter}
+        roleFilter={roleFilter} setRoleFilter={setRoleFilter}
+        departmentFilter={departmentFilter} setDepartmentFilter={setDepartmentFilter}
+        batchFilter={batchFilter} setBatchFilter={setBatchFilter}
+        availableCompanies={availableCompanies}
+        availableRoles={availableRoles}
+        availableDepartments={availableDepartments}
+        availableBatches={availableBatches}
+        clearFilters={clearFilters}
       />
     </div>
   );
