@@ -1,22 +1,73 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Users, FileText, CheckCircle, Activity, Search, ShieldCheck, MoreVertical } from 'lucide-react';
 import { Card, Badge, Input, Button, Avatar } from '../../components/ui';
+import { supabase } from '../../lib/supabase';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview'); // overview, users, activity
+  const [loading, setLoading] = useState(true);
+  
+  const [dashboardStats, setDashboardStats] = useState([
+    { title: 'Total Users', value: '0', change: '+0%', icon: <Users size={20} /> },
+    { title: 'Active Postings', value: '0', change: '+0%', icon: <FileText size={20} /> },
+    { title: 'Successful Referrals', value: '0', change: '+0%', icon: <CheckCircle size={20} /> },
+    { title: 'Platform Activity', value: '100%', change: '+0%', icon: <Activity size={20} /> },
+  ]);
 
-  const stats = [
-    { title: 'Total Users', value: '2,451', change: '+12%', icon: <Users size={20} /> },
-    { title: 'Active Postings', value: '342', change: '+5%', icon: <FileText size={20} /> },
-    { title: 'Successful Referrals', value: '189', change: '+24%', icon: <CheckCircle size={20} /> },
-    { title: 'Platform Activity', value: '92%', change: '+2%', icon: <Activity size={20} /> },
-  ];
+  const [pendingVerifications, setPendingVerifications] = useState([]);
 
-  const pendingVerifications = [
-    { id: 1, name: 'David Smith', role: 'Alumni', email: 'd.smith@alumni.edu', date: '2 hours ago', status: 'Pending' },
-    { id: 2, name: 'Emma Wilson', role: 'Student', email: 'e.wilson@student.edu', date: '5 hours ago', status: 'Pending' },
-  ];
+  useEffect(() => {
+    async function fetchDashboardData() {
+      try {
+        // Fetch counts
+        const [
+          { count: usersCount }, 
+          { count: opportunitiesCount }, 
+          { count: referralsCount }
+        ] = await Promise.all([
+          supabase.from('profiles').select('*', { count: 'exact', head: true }),
+          supabase.from('opportunities').select('*', { count: 'exact', head: true }).eq('status', 'open'),
+          supabase.from('referral_requests').select('*', { count: 'exact', head: true }).eq('status', 'referred')
+        ]);
+
+        setDashboardStats([
+          { title: 'Total Users', value: usersCount?.toLocaleString() || '0', change: 'Live', icon: <Users size={20} /> },
+          { title: 'Active Postings', value: opportunitiesCount?.toLocaleString() || '0', change: 'Live', icon: <FileText size={20} /> },
+          { title: 'Successful Referrals', value: referralsCount?.toLocaleString() || '0', change: 'Live', icon: <CheckCircle size={20} /> },
+          { title: 'Platform Activity', value: '100%', change: 'Live', icon: <Activity size={20} /> },
+        ]);
+
+        // Fetch top 5 pending verifications
+        const { data: pendingData } = await supabase
+          .from('alumni_profiles')
+          .select('id, profiles(email, full_name, created_at)')
+          .eq('is_verified', false)
+          .limit(5);
+
+        if (pendingData) {
+          const mapped = pendingData.map(item => ({
+            id: item.id,
+            name: item.profiles?.full_name || 'Unknown',
+            role: 'Alumni',
+            email: item.profiles?.email || 'No email',
+            date: new Date(item.profiles?.created_at).toLocaleDateString(),
+            status: 'Pending'
+          }));
+          setPendingVerifications(mapped);
+        }
+
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchDashboardData();
+  }, []);
+
 
   return (
     <div className="pb-14">
@@ -50,7 +101,7 @@ export default function AdminDashboard() {
           
           {/* Stats Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {stats.map((stat, idx) => (
+            {dashboardStats.map((stat, idx) => (
               <Card key={idx} className="p-5 bg-white flex flex-col hover:shadow-soft transition-shadow">
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
@@ -61,7 +112,11 @@ export default function AdminDashboard() {
                   </Badge>
                 </div>
                 <div>
-                  <h3 className="text-[28px] font-bold text-text-main leading-none mb-1">{stat.value}</h3>
+                  {loading ? (
+                    <div className="h-7 bg-gray-200 animate-pulse rounded w-16 mb-1"></div>
+                  ) : (
+                    <h3 className="text-[28px] font-bold text-text-main leading-none mb-1">{stat.value}</h3>
+                  )}
                   <p className="text-[13px] font-medium text-text-secondary">{stat.title}</p>
                 </div>
               </Card>
@@ -75,49 +130,57 @@ export default function AdminDashboard() {
                 <h3 className="text-[16px] font-bold text-text-main">Pending Verifications</h3>
                 <p className="text-[13px] text-text-secondary mt-0.5">Approve new user registrations.</p>
               </div>
-              <Button variant="outline" className="h-9 px-4 text-xs">View All</Button>
+              <Link to="/admin/users/verification">
+                <Button variant="outline" className="h-9 px-4 text-xs">View All</Button>
+              </Link>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-[13px]">
-                <thead className="bg-secondary/50 text-text-secondary font-semibold">
-                  <tr>
-                    <th className="px-6 py-3 border-b border-border">User</th>
-                    <th className="px-6 py-3 border-b border-border">Role</th>
-                    <th className="px-6 py-3 border-b border-border">Registered</th>
-                    <th className="px-6 py-3 border-b border-border">Status</th>
-                    <th className="px-6 py-3 border-b border-border text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {pendingVerifications.map((user) => (
-                    <tr key={user.id} className="hover:bg-secondary/20 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <Avatar src="" size="sm" className="bg-primary/10 text-primary" />
-                          <div>
-                            <p className="font-semibold text-text-main">{user.name}</p>
-                            <p className="text-[12px] text-text-secondary">{user.email}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 font-medium text-text-main">{user.role}</td>
-                      <td className="px-6 py-4 text-text-secondary">{user.date}</td>
-                      <td className="px-6 py-4">
-                        <Badge variant="warning" className="bg-warning/10 text-warning border-warning/20">
-                          {user.status}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button variant="outline" className="h-8 px-3 text-xs border-success/30 text-success hover:bg-success/5 hover:border-success">Approve</Button>
-                          <Button variant="ghost" className="h-8 px-3 text-xs text-error hover:bg-error/5">Reject</Button>
-                        </div>
-                      </td>
+            {loading ? (
+              <div className="p-8 text-center text-text-secondary">Loading...</div>
+            ) : pendingVerifications.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-[13px]">
+                  <thead className="bg-secondary/50 text-text-secondary font-semibold">
+                    <tr>
+                      <th className="px-6 py-3 border-b border-border">User</th>
+                      <th className="px-6 py-3 border-b border-border">Role</th>
+                      <th className="px-6 py-3 border-b border-border">Registered</th>
+                      <th className="px-6 py-3 border-b border-border">Status</th>
+                      <th className="px-6 py-3 border-b border-border text-right">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {pendingVerifications.map((user) => (
+                      <tr key={user.id} className="hover:bg-secondary/20 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <Avatar src="" size="sm" className="bg-primary/10 text-primary" />
+                            <div>
+                              <p className="font-semibold text-text-main">{user.name}</p>
+                              <p className="text-[12px] text-text-secondary">{user.email}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 font-medium text-text-main">{user.role}</td>
+                        <td className="px-6 py-4 text-text-secondary">{user.date}</td>
+                        <td className="px-6 py-4">
+                          <Badge variant="warning" className="bg-warning/10 text-warning border-warning/20">
+                            {user.status}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button variant="outline" className="h-8 px-3 text-xs border-success/30 text-success hover:bg-success/5 hover:border-success">Approve</Button>
+                            <Button variant="ghost" className="h-8 px-3 text-xs text-error hover:bg-error/5">Reject</Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="p-8 text-center text-text-secondary">No pending verifications.</div>
+            )}
           </Card>
         </motion.div>
       )}

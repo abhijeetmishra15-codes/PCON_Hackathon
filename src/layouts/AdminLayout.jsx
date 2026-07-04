@@ -12,7 +12,7 @@ import {
   Calendar,
   Megaphone,
   BarChart,
-  Settings,
+  User,
   ArrowLeft
 } from 'lucide-react';
 
@@ -33,7 +33,7 @@ export default function AdminLayout() {
 
   const adminBottomItems = [
     { icon: ArrowLeft, label: 'Exit Admin', to: '/dashboard' },
-    { icon: Settings, label: 'Settings', to: '/admin/settings' },
+    { icon: User, label: 'My profile', to: '/admin/settings' },
   ];
 
   return (

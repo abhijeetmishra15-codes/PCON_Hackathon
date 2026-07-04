@@ -7,7 +7,7 @@ import {
   Users,
   MessageSquare,
   Trophy,
-  Settings,
+  User,
   GraduationCap,
   ShieldCheck,
   LogOut,
@@ -49,7 +49,7 @@ export default function Sidebar({ isOpen, onClose, customNavItems, customBottomI
   }
 
   const defaultBottomItems = [
-    { icon: Settings, label: 'Settings', to: '/settings' },
+    { icon: User, label: 'My profile', to: '/settings' },
   ];
 
   if (isAdmin) {
