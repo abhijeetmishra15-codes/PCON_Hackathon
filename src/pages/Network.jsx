@@ -3,10 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, UserPlus, MessageSquare, Search, MoreHorizontal, X, Check, Loader2, UserMinus } from 'lucide-react';
 import { Card, Button, Avatar, Input, Badge } from '../components/ui';
 import { useConnections } from '../hooks/useConnections';
+import { useChat } from '../hooks/useChat';
+import { useNavigate } from 'react-router-dom';
 
 export default function Network() {
   const [activeTab, setActiveTab] = useState('connections'); // connections, requests
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+  const { startChat } = useChat();
+  const [startingChatId, setStartingChatId] = useState(null);
 
   const {
     isLoading,
@@ -35,6 +40,19 @@ export default function Network() {
   const formatDate = (dateString) => {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const handleMessageClick = async (otherUserId) => {
+    try {
+      setStartingChatId(otherUserId);
+      const roomId = await startChat(otherUserId);
+      navigate(`/chat?room=${roomId}`);
+    } catch (error) {
+      console.error(error);
+      alert(error.message || 'Failed to start chat');
+    } finally {
+      setStartingChatId(null);
+    }
   };
 
   return (
@@ -123,8 +141,17 @@ export default function Network() {
                         <p className="text-[11px] text-text-secondary/70 mt-0.5">Connected on {formatDate(conn.connected_on)}</p>
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="outline" className="w-9 h-9 p-0 flex items-center justify-center rounded-full hover:bg-primary/5 hover:text-primary hover:border-primary/30">
-                          <MessageSquare size={16} />
+                        <Button 
+                          variant="outline" 
+                          onClick={() => handleMessageClick(conn.person?.id)}
+                          disabled={startingChatId === conn.person?.id}
+                          className="w-9 h-9 p-0 flex items-center justify-center rounded-full hover:bg-primary/5 hover:text-primary hover:border-primary/30"
+                        >
+                          {startingChatId === conn.person?.id ? (
+                            <Loader2 size={16} className="animate-spin" />
+                          ) : (
+                            <MessageSquare size={16} />
+                          )}
                         </Button>
                         <Button 
                           variant="ghost" 

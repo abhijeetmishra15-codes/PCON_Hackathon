@@ -12,7 +12,8 @@ import {
   ShieldCheck,
   LogOut,
   Building2,
-  Calendar
+  Calendar,
+  MessageCircle
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../contexts/AuthContext';
@@ -27,6 +28,7 @@ export default function Sidebar({ isOpen, onClose }) {
     { icon: Building2, label: 'Opportunities', to: '/opportunities' },
     { icon: Briefcase, label: 'Referrals', to: '/referrals' },
     { icon: Users, label: 'Network', to: '/network' },
+    { icon: MessageCircle, label: 'Messages', to: '/chat' },
     { icon: MessageSquare, label: 'AI Assistant', to: '/assistant' },
     { icon: Trophy, label: 'Leaderboard', to: '/leaderboard' },
     { icon: Calendar, label: 'Events', to: '/events' },

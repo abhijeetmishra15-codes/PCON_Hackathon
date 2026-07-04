@@ -21,6 +21,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import SupabaseTest from './pages/SupabaseTest';
 import Events from './pages/Events';
 import MyEvents from './pages/MyEvents';
+import Chat from './pages/Chat';
 
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -55,6 +56,7 @@ function App() {
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/events" element={<Events />} />
               <Route path="/my-events" element={<MyEvents />} />
+              <Route path="/chat" element={<Chat />} />
               <Route path="/settings" element={<Profile />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
