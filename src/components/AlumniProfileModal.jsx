@@ -51,20 +51,20 @@ export default function AlumniProfileModal({
             animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
             exit={{ opacity: 0, scale: 0.95, x: "-50%", y: "-40%" }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed left-1/2 top-1/2 w-full max-w-2xl bg-white rounded-2xl shadow-xl z-[101] overflow-hidden max-h-[90vh] flex flex-col"
+            className="fixed left-1/2 top-1/2 w-full max-w-2xl bg-white rounded-2xl shadow-xl z-[101] overflow-y-auto max-h-[90vh] flex flex-col"
           >
             {/* Header / Banner */}
             <div className="h-32 bg-primary/10 relative shrink-0">
               <button 
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 bg-white/50 hover:bg-white rounded-full transition-colors backdrop-blur-md"
+                className="absolute top-4 right-4 p-2 bg-white/50 hover:bg-white rounded-full transition-colors backdrop-blur-md z-10"
               >
                 <X size={20} className="text-text-secondary" />
               </button>
             </div>
 
-            {/* Content Scrollable Area */}
-            <div className="px-6 sm:px-8 pb-8 pt-0 overflow-y-auto flex-1">
+            {/* Content Area */}
+            <div className="px-6 sm:px-8 pb-8 pt-0 flex-1">
               {/* Profile Meta */}
               <div className="flex flex-col sm:flex-row gap-6 relative -mt-12 sm:-mt-16 items-start">
                 <Avatar 

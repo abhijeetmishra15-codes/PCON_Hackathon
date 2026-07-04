@@ -14,7 +14,7 @@
 
   body {
     @apply font-sans antialiased;
-    background: linear-gradient(160deg, #FAFAF8 0%, #F8F6F2 40%, #FAFAF8 100%);
+    background: #FFF3E6;
     background-attachment: fixed;
     color: #111827;
     line-height: 1.65;
@@ -175,6 +175,7 @@
   /* ── Radial background accent (very subtle) ── */
   .bg-radial-accent {
     position: relative;
+    background: transparent !important; /* Override inline gradient so body background shows through */
   }
   .bg-radial-accent::before {
     content: '';
