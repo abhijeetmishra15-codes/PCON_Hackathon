@@ -1,9 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Bell, Menu, GraduationCap } from 'lucide-react';
 import { Avatar } from '../ui';
 import NotificationBell from '../notifications/NotificationBell';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Navbar({ onMenuClick, onSearchClick }) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   return (
     <nav className="sticky top-0 z-40 w-full glass-panel border-b border-border">
       <div className="px-4 sm:px-6 lg:px-8 h-[60px] flex items-center justify-between gap-4">
@@ -59,11 +63,12 @@ export default function Navbar({ onMenuClick, onSearchClick }) {
 
           {/* Avatar */}
           <button
+            onClick={() => navigate('/settings')}
             className="flex items-center gap-2 rounded-xl p-0.5 ring-2 ring-transparent hover:ring-primary/20 transition-all duration-200"
             aria-label="User profile"
           >
             <Avatar
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&h=64"
+              src={user?.user_metadata?.avatar_url || ''}
               size="md"
               status="online"
             />

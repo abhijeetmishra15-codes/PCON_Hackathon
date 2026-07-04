@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Building2, Briefcase, GraduationCap, 
@@ -22,6 +23,7 @@ export default function AlumniProfileModal({
 }) {
   const [mounted, setMounted] = useState(false);
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setMounted(true);
@@ -279,8 +281,16 @@ export default function AlumniProfileModal({
                       ✨ Generate AI Referral Request
                     </Button>
 
-                    <Button variant="ghost" className="w-full justify-start h-11 text-text-secondary hover:text-text-main" leftIcon={<MessageSquare size={16} />}>
-                      Message (Coming Soon)
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start h-11 text-text-secondary hover:text-text-main" 
+                      leftIcon={<MessageSquare size={16} />}
+                      onClick={() => {
+                        onClose();
+                        navigate('/chat');
+                      }}
+                    >
+                      Message
                     </Button>
                   </div>
                 </div>

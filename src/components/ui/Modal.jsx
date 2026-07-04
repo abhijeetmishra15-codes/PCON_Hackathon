@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { cn } from '../../utils/cn';
@@ -11,8 +12,10 @@ export default function Modal({
   className,
   maxWidth = 'max-w-lg'
 }) {
+  const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
+    setMounted(true);
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -21,7 +24,9 @@ export default function Modal({
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -31,7 +36,7 @@ export default function Modal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-text-main/20 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6"
+            className="fixed inset-0 bg-text-main/20 backdrop-blur-sm z-[999] flex items-center justify-center p-4 sm:p-6"
           >
             {/* Dialog */}
             <motion.div
@@ -65,6 +70,7 @@ export default function Modal({
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

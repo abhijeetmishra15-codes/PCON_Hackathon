@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .from('admins')
         .select('user_id')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
       return !!data;
     } catch {
       return false;
