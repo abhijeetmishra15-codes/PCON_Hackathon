@@ -369,7 +369,6 @@ export default function LandingPage() {
   const features = [
     { icon: <Search size={24} />, title: 'Alumni Discovery', desc: 'Search and filter alumni by company, role, industry, and graduation batch with intelligent AI ranking.' },
     { icon: <Briefcase size={24} />, title: 'Referral Portal', desc: 'Access curated internship and full-time opportunities posted directly by verified alumni.' },
-    { icon: <Brain size={24} />, title: 'AI Career Assistant', desc: 'Get ATS score analysis, resume optimization, personalized roadmaps and smart career guidance.' },
     { icon: <Trophy size={24} />, title: 'Contribution Rewards', desc: 'Alumni earn points for referrals and mentorship. Top contributors are featured on leaderboards.' },
     { icon: <Shield size={24} />, title: 'Verified Network', desc: 'Every user is verified through official college email IDs ensuring a trusted, institutional network.' },
     { icon: <Target size={24} />, title: 'Smart Matching', desc: 'AI matches students with alumni based on skills, interests, and career goals for personalized connections.' },

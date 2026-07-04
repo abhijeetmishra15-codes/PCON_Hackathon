@@ -31,7 +31,6 @@ export default function Sidebar({ isOpen, onClose }) {
     { icon: Briefcase, label: 'Referrals', to: '/referrals' },
     { icon: Users, label: 'Network', to: '/network' },
     { icon: MessageCircle, label: 'Messages', to: '/chat' },
-    { icon: MessageSquare, label: 'AI Assistant', to: '/assistant' },
     { icon: Map, label: 'Career Roadmap', to: '/roadmap' },
     { icon: Mic, label: 'Interview Prep', to: '/interview' },
     { icon: Trophy, label: 'Leaderboard', to: '/leaderboard' },
