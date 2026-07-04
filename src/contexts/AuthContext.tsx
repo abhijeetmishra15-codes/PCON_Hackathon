@@ -6,6 +6,7 @@ type AuthContextType = {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
+  isAdmin: boolean;
   signOut: () => Promise<void>;
 };
 
@@ -13,6 +14,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
   isLoading: true,
+  isAdmin: false,
   signOut: async () => {},
 });
 
@@ -20,6 +22,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const checkAdminStatus = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('admins')
+        .select('user_id')
+        .eq('user_id', userId)
+        .single();
+      return !!data;
+    } catch {
+      return false;
+    }
+  };
 
   useEffect(() => {
     // Check initial session
@@ -30,6 +46,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         
         setSession(session);
         setUser(session?.user ?? null);
+        if (session?.user) {
+          const adminStatus = await checkAdminStatus(session.user.id);
+          setIsAdmin(adminStatus);
+        } else {
+          setIsAdmin(false);
+        }
       } catch (error) {
         console.error('Error fetching session:', error);
       } finally {
@@ -44,7 +66,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       (event, newSession) => {
         setSession(newSession);
         setUser(newSession?.user ?? null);
-        setIsLoading(false);
+        if (newSession?.user) {
+          checkAdminStatus(newSession.user.id).then((status) => {
+            setIsAdmin(status);
+            setIsLoading(false);
+          });
+        } else {
+          setIsAdmin(false);
+          setIsLoading(false);
+        }
       }
     );
 
@@ -58,7 +88,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isLoading, signOut }}>
+    <AuthContext.Provider value={{ user, session, isLoading, isAdmin, signOut }}>
       {children}
     </AuthContext.Provider>
   );

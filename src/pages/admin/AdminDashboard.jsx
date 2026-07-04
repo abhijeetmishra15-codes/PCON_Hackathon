@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Users, FileText, CheckCircle, Activity, Search, ShieldCheck, MoreVertical } from 'lucide-react';
-import { Card, Badge, Input, Button, Avatar } from '../components/ui';
+import { Card, Badge, Input, Button, Avatar } from '../../components/ui';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview'); // overview, users, activity

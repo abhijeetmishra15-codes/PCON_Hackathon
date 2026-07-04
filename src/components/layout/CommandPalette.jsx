@@ -19,10 +19,17 @@ export default function CommandPalette({ isOpen, onClose }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  const results = [
+  const allResults = [
     { id: 1, type: 'people', title: 'John Doe', subtitle: 'Software Engineer at Apple', icon: <User size={16}/> },
     { id: 2, type: 'jobs', title: 'Frontend Developer', subtitle: 'Linear • San Francisco', icon: <Briefcase size={16}/> },
   ];
+
+  const results = search.trim() === '' 
+    ? allResults 
+    : allResults.filter(item => 
+        item.title.toLowerCase().includes(search.toLowerCase()) || 
+        item.subtitle.toLowerCase().includes(search.toLowerCase())
+      );
 
   return (
     <AnimatePresence>

@@ -20,11 +20,11 @@ import {
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../contexts/AuthContext';
 
-export default function Sidebar({ isOpen, onClose }) {
-  const { user, signOut } = useAuth();
+export default function Sidebar({ isOpen, onClose, customNavItems, customBottomItems }) {
+  const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
 
-  const navItems = [
+  const defaultNavItems = [
     { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard' },
     { icon: Search, label: 'Discover', to: '/discover' },
     { icon: Building2, label: 'Opportunities', to: '/opportunities' },
@@ -42,16 +42,22 @@ export default function Sidebar({ isOpen, onClose }) {
   const role = user?.user_metadata?.role;
   if (role === 'alumni') {
     // Insert after Opportunities
-    const oppIndex = navItems.findIndex(i => i.to === '/opportunities');
+    const oppIndex = defaultNavItems.findIndex(i => i.to === '/opportunities');
     if (oppIndex !== -1) {
-      navItems.splice(oppIndex + 1, 0, { icon: Briefcase, label: 'My Opportunities', to: '/my-opportunities' });
+      defaultNavItems.splice(oppIndex + 1, 0, { icon: Briefcase, label: 'My Opportunities', to: '/my-opportunities' });
     }
   }
 
-  const bottomItems = [
-    { icon: ShieldCheck, label: 'Admin', to: '/admin' },
+  const defaultBottomItems = [
     { icon: Settings, label: 'Settings', to: '/settings' },
   ];
+
+  if (isAdmin) {
+    defaultBottomItems.unshift({ icon: ShieldCheck, label: 'Admin Dashboard', to: '/admin' });
+  }
+
+  const activeNavItems = customNavItems || defaultNavItems;
+  const activeBottomItems = customBottomItems || defaultBottomItems;
 
   const handleNavClick = () => {
     if (window.innerWidth < 1024) onClose();
@@ -94,7 +100,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
         {/* Nav Items */}
         <div className="flex-1 overflow-y-auto py-5 px-3 space-y-0.5">
-          {navItems.map((item) => (
+          {activeNavItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -128,7 +134,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
         {/* Bottom: Settings & Logout */}
         <div className="px-3 pb-4 pt-2 border-t border-border space-y-0.5">
-          {bottomItems.map((item) => (
+          {activeBottomItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
