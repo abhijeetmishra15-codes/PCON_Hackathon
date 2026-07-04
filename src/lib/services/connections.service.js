@@ -1,4 +1,5 @@
 import { supabase } from '../supabase';
+import { notificationsService } from './notifications.service';
 
 export const ConnectionsService = {
   /**
@@ -175,6 +176,20 @@ export const ConnectionsService = {
       .single();
 
     if (error) throw error;
+
+    try {
+      await notificationsService.createNotification(
+        data.requester_id,
+        data.addressee_id,
+        'connection_accepted',
+        'connection',
+        data.id,
+        'accepted your connection request'
+      );
+    } catch (err) {
+      console.error('Error creating notification:', err);
+    }
+
     return data;
   },
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, Bell, Menu, GraduationCap } from 'lucide-react';
 import { Avatar } from '../ui';
+import NotificationBell from '../notifications/NotificationBell';
 
 export default function Navbar({ onMenuClick, onSearchClick }) {
   return (
@@ -51,13 +52,7 @@ export default function Navbar({ onMenuClick, onSearchClick }) {
           </button>
 
           {/* Notifications */}
-          <button
-            className="relative p-2 text-text-secondary hover:text-text-main transition-colors rounded-xl hover:bg-secondary"
-            aria-label="Notifications"
-          >
-            <Bell size={20} />
-            <span className="absolute top-1 right-1 w-[7px] h-[7px] bg-primary rounded-full ring-2 ring-white" />
-          </button>
+          <NotificationBell />
 
           {/* Divider */}
           <div className="h-5 w-px bg-border hidden sm:block mx-1" />

@@ -20,9 +20,9 @@ export const ResumeService = {
       .select('id, file_url, is_primary, created_at')
       .eq('student_id', studentId)
       .eq('is_primary', true)
-      .single();
+      .maybeSingle();
 
-    if (error && error.code !== 'PGRST116') {
+    if (error) {
       throw error;
     }
 

@@ -1,4 +1,5 @@
 import { supabase } from '../supabase';
+import { notificationsService } from './notifications.service';
 
 export const ReferralsService = {
   /**
@@ -150,6 +151,20 @@ export const ReferralsService = {
       .single();
 
     if (error) throw error;
+
+    try {
+      await notificationsService.createNotification(
+        data.student_id,
+        data.alumni_id,
+        'referral_approved',
+        'referral',
+        data.id,
+        'approved your referral request and is reviewing it'
+      );
+    } catch (err) {
+      console.error('Error creating notification:', err);
+    }
+
     return data;
   },
 
@@ -165,6 +180,20 @@ export const ReferralsService = {
       .single();
 
     if (error) throw error;
+
+    try {
+      await notificationsService.createNotification(
+        data.student_id,
+        data.alumni_id,
+        'referral_rejected',
+        'referral',
+        data.id,
+        'declined your referral request'
+      );
+    } catch (err) {
+      console.error('Error creating notification:', err);
+    }
+
     return data;
   },
 
@@ -180,6 +209,20 @@ export const ReferralsService = {
       .single();
 
     if (error) throw error;
+
+    try {
+      await notificationsService.createNotification(
+        data.student_id,
+        data.alumni_id,
+        'referral_completed',
+        'referral',
+        data.id,
+        'has successfully submitted your referral'
+      );
+    } catch (err) {
+      console.error('Error creating notification:', err);
+    }
+
     return data;
   },
 

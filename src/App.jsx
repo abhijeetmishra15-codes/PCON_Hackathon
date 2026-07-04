@@ -22,6 +22,7 @@ import SupabaseTest from './pages/SupabaseTest';
 import Events from './pages/Events';
 import MyEvents from './pages/MyEvents';
 import Chat from './pages/Chat';
+import Notifications from './pages/Notifications';
 
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -57,6 +58,7 @@ function App() {
               <Route path="/events" element={<Events />} />
               <Route path="/my-events" element={<MyEvents />} />
               <Route path="/chat" element={<Chat />} />
+              <Route path="/notifications" element={<Notifications />} />
               <Route path="/settings" element={<Profile />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />

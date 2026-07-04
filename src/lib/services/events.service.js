@@ -1,4 +1,5 @@
 import { supabase } from '../supabase';
+import { notificationsService } from './notifications.service';
 
 export const EventsService = {
   /**
@@ -197,6 +198,28 @@ export const EventsService = {
       .single();
 
     if (error) throw error;
+
+    try {
+      const { data: eventData } = await supabase
+        .from('events')
+        .select('organizer_id, title')
+        .eq('id', eventId)
+        .single();
+
+      if (eventData && eventData.organizer_id !== userId) {
+        await notificationsService.createNotification(
+          eventData.organizer_id,
+          userId,
+          'event_registration',
+          'event',
+          eventId,
+          `registered for your event: ${eventData.title}`
+        );
+      }
+    } catch (err) {
+      console.error('Error creating notification:', err);
+    }
+
     return data;
   },
 
