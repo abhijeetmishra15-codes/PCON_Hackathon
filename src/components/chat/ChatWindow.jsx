@@ -37,22 +37,23 @@ export default function ChatWindow({
   const otherUser = room.other_user;
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-background relative">
+    <div className="flex-1 flex flex-col h-full relative" style={{ background: 'linear-gradient(to bottom, #ffffff, #FAFAF8)' }}>
       {/* Header */}
-      <div className="flex items-center gap-3 p-4 border-b border-white/5 bg-secondary/30 backdrop-blur-md">
-        <Avatar 
-          src={otherUser?.avatar_url} 
-          alt={otherUser?.full_name} 
-          size="md" 
+      <div className="flex items-center gap-3.5 px-5 py-4 flex-shrink-0"
+        style={{ borderBottom: '1px solid rgba(0,0,0,0.05)', background: 'rgba(250,250,248,0.90)' }}>
+        <Avatar
+          src={otherUser?.avatar_url}
+          alt={otherUser?.full_name}
+          size="md"
         />
         <div>
-          <h3 className="font-semibold text-text-main">{otherUser?.full_name}</h3>
-          <p className="text-xs text-text-muted capitalize">{otherUser?.role}</p>
+          <h3 className="font-bold text-text-main text-[14.5px]" style={{ letterSpacing: '-0.02em' }}>{otherUser?.full_name}</h3>
+          <p className="text-[11.5px] text-text-secondary/60 capitalize font-medium mt-0.5">{otherUser?.role}</p>
         </div>
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-2 relative">
+      <div className="flex-1 overflow-y-auto px-5 py-5 space-y-1 relative">
         {loading && (!messages || messages.length === 0) ? (
           <div className="absolute inset-0 flex items-center justify-center">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />

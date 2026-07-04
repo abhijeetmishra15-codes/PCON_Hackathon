@@ -18,32 +18,33 @@ export default function Toast({
   };
 
   const bgStyles = {
-    success: 'bg-success/5 border-success/20',
-    error: 'bg-danger/5 border-danger/20',
-    info: 'bg-secondary border-border',
+    success: 'border-success/15',
+    error: 'border-danger/15',
+    info: 'border-[rgba(0,0,0,0.06)]',
   };
 
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          initial={{ opacity: 0, y: 24, scale: 0.94 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 20, scale: 0.95 }}
-          className="fixed bottom-6 right-6 z-50 flex"
+          exit={{ opacity: 0, y: 24, scale: 0.94 }}
+          transition={{ type: 'spring', bounce: 0.2, duration: 0.35 }}
+          className="fixed bottom-6 right-6 z-[9999] flex"
         >
           <div className={cn(
-            "flex items-start p-4 rounded-card border shadow-floating max-w-sm w-full bg-white backdrop-blur-xl",
+            "flex items-start p-5 rounded-[20px] border shadow-floating max-w-sm w-full bg-white",
             bgStyles[type]
           )}>
-            <div className="shrink-0 mr-3 mt-0.5">
+            <div className="shrink-0 mr-3.5 mt-0.5">
               {icons[type]}
             </div>
             
             <div className="flex-1 mr-4">
-              <h4 className="text-sm font-semibold text-text-main">{title}</h4>
+              <h4 className="text-[13.5px] font-bold text-text-main tracking-tight">{title}</h4>
               {message && (
-                <p className="text-sm text-text-secondary mt-1 leading-snug">
+                <p className="text-[12.5px] text-text-secondary mt-1 leading-relaxed">
                   {message}
                 </p>
               )}
@@ -51,9 +52,9 @@ export default function Toast({
 
             <button 
               onClick={onClose}
-              className="shrink-0 text-text-secondary hover:text-text-main transition-colors"
+              className="shrink-0 text-text-secondary/60 hover:text-text-main transition-colors p-0.5 rounded-lg hover:bg-secondary"
             >
-              <X size={16} />
+              <X size={15} />
             </button>
           </div>
         </motion.div>

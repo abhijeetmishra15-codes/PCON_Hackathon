@@ -41,7 +41,6 @@ export default function Sidebar({ isOpen, onClose, customNavItems, customBottomI
   // Add "My Opportunities" dynamically if user is an alumni
   const role = user?.user_metadata?.role;
   if (role === 'alumni') {
-    // Insert after Opportunities
     const oppIndex = defaultNavItems.findIndex(i => i.to === '/opportunities');
     if (oppIndex !== -1) {
       defaultNavItems.splice(oppIndex + 1, 0, { icon: Briefcase, label: 'My Opportunities', to: '/my-opportunities' });
@@ -69,9 +68,10 @@ export default function Sidebar({ isOpen, onClose, customNavItems, customBottomI
   };
 
   const sidebarClasses = cn(
-    'fixed inset-y-0 left-0 z-50 w-[240px] flex flex-col',
-    'bg-[#FEFAF6] border-r border-border',
-    'transition-transform duration-300 ease-out lg:translate-x-0',
+    'fixed inset-y-0 left-0 z-50 w-[244px] flex flex-col',
+    'bg-white border-r border-[rgba(0,0,0,0.055)]',
+    'shadow-[2px_0_32px_rgba(0,0,0,0.035)]',
+    'transition-transform duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)] lg:translate-x-0',
     isOpen ? 'translate-x-0' : '-translate-x-full'
   );
 
@@ -80,79 +80,95 @@ export default function Sidebar({ isOpen, onClose, customNavItems, customBottomI
       {/* Mobile Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-text-main/15 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+          className="fixed inset-0 bg-text-main/12 backdrop-blur-[6px] z-40 lg:hidden"
+          style={{ transition: 'opacity 0.25s ease' }}
           onClick={onClose}
         />
       )}
 
       <aside className={sidebarClasses}>
         {/* Logo */}
-        <div className="h-[60px] flex items-center px-5 border-b border-border shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-btn-primary shrink-0">
-              <GraduationCap size={18} className="text-white" />
+        <div className="h-[64px] flex items-center px-5 border-b border-[rgba(0,0,0,0.04)] shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-[34px] h-[34px] rounded-[12px] bg-gradient-to-br from-[#FBBF24] to-[#FB923C] flex items-center justify-center shrink-0"
+              style={{ boxShadow: '0 2px 10px rgba(245,158,11,0.38), 0 1px 3px rgba(0,0,0,0.10)' }}>
+              <GraduationCap size={17} className="text-white" />
             </div>
-            <span className="font-bold text-[17px] tracking-tight text-text-main">
+            <span className="font-bold text-[16px] tracking-[-0.025em] text-text-main">
               AlumniConnect
             </span>
           </div>
         </div>
 
         {/* Nav Items */}
-        <div className="flex-1 overflow-y-auto py-5 px-3 space-y-0.5">
+        <div className="flex-1 overflow-y-auto py-4 px-2.5 space-y-[2px]">
           {activeNavItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               onClick={handleNavClick}
               className={({ isActive }) => cn(
-                'flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition-all duration-150 group relative',
+                'flex items-center gap-3 px-3 py-[9px] rounded-[13px] text-[13px] font-medium',
+                'transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] group relative',
                 isActive
                   ? [
-                    'bg-primary/10 text-primary',
+                    'bg-gradient-to-r from-primary/[0.10] to-primary/[0.05] text-primary',
+                    'shadow-[inset_0_1px_0_rgba(245,158,11,0.10)]',
                     'before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2',
-                    'before:w-[3px] before:h-5 before:rounded-r-full before:bg-primary',
+                    'before:w-[3px] before:h-[17px] before:rounded-r-full before:bg-primary',
+                    'before:shadow-[0_0_8px_rgba(245,158,11,0.30)]',
                   ].join(' ')
-                  : 'text-text-secondary hover:bg-secondary/80 hover:text-text-main'
+                  : 'text-[#5A6474] hover:bg-[#F5F0E8]/80 hover:text-[#111827]'
               )}
             >
               {({ isActive }) => (
                 <>
                   <item.icon
-                    size={17}
+                    size={16}
                     className={cn(
-                      'shrink-0 transition-colors duration-150',
-                      isActive ? 'text-primary' : 'text-text-secondary/70 group-hover:text-text-main'
+                      'shrink-0 transition-all duration-[180ms]',
+                      isActive
+                        ? 'text-primary scale-[1.05]'
+                        : 'text-[#8B95A5] group-hover:text-[#111827] group-hover:scale-[1.10]'
                     )}
                   />
-                  {item.label}
+                  <span className={cn(
+                    'truncate transition-colors duration-150',
+                    isActive ? 'font-semibold' : 'font-medium'
+                  )}>
+                    {item.label}
+                  </span>
                 </>
               )}
             </NavLink>
           ))}
         </div>
 
-        {/* Bottom: Settings & Logout */}
-        <div className="px-3 pb-4 pt-2 border-t border-border space-y-0.5">
+        {/* Bottom: Profile & Logout */}
+        <div className="px-2.5 pb-5 pt-3 space-y-[2px]"
+          style={{ borderTop: '1px solid rgba(0,0,0,0.045)' }}>
           {activeBottomItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               onClick={handleNavClick}
               className={({ isActive }) => cn(
-                'flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition-all duration-150 group',
+                'flex items-center gap-3 px-3 py-[9px] rounded-[13px] text-[13px] font-medium',
+                'transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] group',
                 isActive
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-text-secondary hover:bg-secondary/80 hover:text-text-main'
+                  ? 'bg-gradient-to-r from-primary/[0.10] to-primary/[0.05] text-primary font-semibold'
+                  : 'text-[#5A6474] hover:bg-[#F5F0E8]/80 hover:text-[#111827]'
               )}
             >
               {({ isActive }) => (
                 <>
                   <item.icon
-                    size={17}
+                    size={16}
                     className={cn(
-                      'shrink-0 transition-colors',
-                      isActive ? 'text-primary' : 'text-text-secondary/70 group-hover:text-text-main'
+                      'shrink-0 transition-all duration-[180ms]',
+                      isActive
+                        ? 'text-primary scale-[1.05]'
+                        : 'text-[#8B95A5] group-hover:text-[#111827] group-hover:scale-[1.10]'
                     )}
                   />
                   {item.label}
@@ -163,9 +179,17 @@ export default function Sidebar({ isOpen, onClose, customNavItems, customBottomI
 
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition-all duration-150 group text-text-secondary hover:bg-red-50 hover:text-red-600 mt-1"
+            className={[
+              'w-full flex items-center gap-3 px-3 py-[9px] rounded-[13px] text-[13px] font-medium mt-1',
+              'text-[#5A6474] group',
+              'transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
+              'hover:bg-red-50/90 hover:text-red-600',
+            ].join(' ')}
           >
-            <LogOut size={17} className="shrink-0 transition-colors text-text-secondary/70 group-hover:text-red-500" />
+            <LogOut
+              size={16}
+              className="shrink-0 text-[#8B95A5] group-hover:text-red-500 transition-all duration-[180ms] group-hover:scale-[1.10]"
+            />
             Log out
           </button>
         </div>

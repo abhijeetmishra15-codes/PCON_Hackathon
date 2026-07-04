@@ -239,16 +239,16 @@ export default function Profile() {
   return (
     <div className="pb-14 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-7 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-[30px] font-extrabold tracking-tight text-text-main mb-1">
+          <h1 className="text-[32px] font-extrabold text-text-main mb-1.5" style={{ letterSpacing: '-0.03em' }}>
             My Profile
           </h1>
-          <p className="text-[14px] text-text-secondary">
+          <p className="text-[14px] text-text-secondary leading-relaxed">
             Manage your personal information and settings.
           </p>
         </div>
-        <Badge variant={role === 'student' ? 'primary' : role === 'alumni' ? 'success' : 'secondary'} className="px-3 py-1.5 text-sm uppercase tracking-wider font-bold">
+        <Badge variant={role === 'student' ? 'primary' : role === 'alumni' ? 'success' : 'secondary'} className="px-4 py-2 text-[12px] uppercase tracking-widest font-bold rounded-full">
           {role} Account
         </Badge>
       </div>
@@ -256,63 +256,75 @@ export default function Profile() {
       <div className="space-y-6">
         {/* Basic Info Card */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-          <Card className="p-6 bg-white overflow-hidden relative">
-            <div className="h-32 bg-primary/10 absolute top-0 left-0 right-0" />
-            <div className="relative mt-12 flex flex-col sm:flex-row gap-6 items-start sm:items-end">
-              <div className="relative">
-                <Avatar 
-                  src={profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.full_name)}&background=random`} 
-                  size="xl" 
-                  className="w-28 h-28 border-4 border-white shadow-soft"
-                />
-                <button 
-                  onClick={handleAvatarClick}
-                  disabled={isUploadingAvatar}
-                  className="absolute bottom-1 right-1 p-1.5 bg-white rounded-full shadow-sm border border-border text-text-secondary hover:text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isUploadingAvatar ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
-                </button>
-                <input 
-                  type="file" 
-                  ref={avatarInputRef} 
-                  onChange={handleAvatarChange} 
-                  accept="image/jpeg,image/png,image/webp" 
-                  className="hidden" 
-                />
-              </div>
-              <div className="flex-1 pb-2">
-                <h2 className="text-2xl font-bold text-text-main">{profile.full_name}</h2>
-                <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-text-secondary">
-                  <div className="flex items-center gap-1.5">
-                    <Mail size={15} /> {profile.email}
-                  </div>
-                  {profile.department && (
+          <Card className="overflow-hidden relative" style={{ boxShadow: '0 4px 28px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04)' }}>
+            {/* Cover */}
+            <div className="h-[140px] relative overflow-hidden"
+              style={{ background: 'linear-gradient(135deg, #1a1230 0%, #0f2444 50%, #1a1230 100%)' }}>
+              <div className="absolute inset-0 opacity-30"
+                style={{ background: 'radial-gradient(ellipse at 30% 50%, #F59E0B 0%, transparent 60%)' }} />
+              <div className="absolute inset-0 opacity-20"
+                style={{ background: 'radial-gradient(ellipse at 80% 30%, #818cf8 0%, transparent 55%)' }} />
+            </div>
+            {/* Body */}
+            <div className="px-7 pb-7">
+              <div className="relative -mt-14 flex flex-col sm:flex-row gap-5 items-start sm:items-end">
+                <div className="relative shrink-0">
+                  <Avatar
+                    src={profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.full_name)}&background=random`}
+                    size="xl"
+                    className="w-[110px] h-[110px] border-[4px] border-white shadow-[0_4px_16px_rgba(0,0,0,0.14)]" 
+                  />
+                  <button
+                    onClick={handleAvatarClick}
+                    disabled={isUploadingAvatar}
+                    className="absolute bottom-1.5 right-1.5 p-1.5 bg-white rounded-full shadow-md border border-[rgba(0,0,0,0.08)] text-text-secondary hover:text-primary hover:scale-110 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isUploadingAvatar ? <Loader2 size={15} className="animate-spin" /> : <Camera size={15} />}
+                  </button>
+                  <input
+                    type="file"
+                    ref={avatarInputRef}
+                    onChange={handleAvatarChange}
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                  />
+                </div>
+                <div className="flex-1 pb-1">
+                  <h2 className="text-[22px] font-extrabold text-text-main" style={{ letterSpacing: '-0.025em' }}>{profile.full_name}</h2>
+                  <div className="flex flex-wrap items-center gap-3 mt-2 text-[13px] text-text-secondary">
                     <div className="flex items-center gap-1.5">
-                      <GraduationCap size={15} /> {profile.department}
+                      <Mail size={13} className="text-primary/60" /> {profile.email}
                     </div>
+                    {profile.department && (
+                      <div className="flex items-center gap-1.5">
+                        <GraduationCap size={13} className="text-primary/60" /> {profile.department}
+                      </div>
+                    )}
+                  </div>
+                  {avatarError && (
+                    <p className="text-red-500 text-[12px] mt-2 font-semibold">{avatarError}</p>
                   )}
                 </div>
-                {avatarError && (
-                  <p className="text-red-500 text-xs mt-2 font-medium">{avatarError}</p>
-                )}
+                <Button
+                  onClick={handleSave}
+                  isLoading={isSaving}
+                  className="shrink-0 mb-1"
+                >
+                  Save Changes
+                </Button>
               </div>
-              <Button 
-                onClick={handleSave} 
-                isLoading={isSaving}
-                className="shrink-0 mb-2"
-              >
-                Save Changes
-              </Button>
+
+              {saveMessage && (
+                <div className={`mt-5 p-3.5 rounded-[14px] flex items-center gap-2.5 text-[13px] font-semibold ${
+                  saveMessage.type === 'success'
+                    ? 'bg-success/[0.09] text-success border border-success/[0.18]'
+                    : 'bg-red-50 text-red-600 border border-red-200/60'
+                }`}>
+                  {saveMessage.type === 'success' ? <CheckCircle size={15} /> : <AlertCircle size={15} />}
+                  {saveMessage.text}
+                </div>
+              )}
             </div>
-            
-            {saveMessage && (
-              <div className={`mt-4 p-3 rounded-lg flex items-center gap-2 text-sm font-medium ${
-                saveMessage.type === 'success' ? 'bg-success/10 text-success border border-success/20' : 'bg-red-50 text-red-600 border border-red-200'
-              }`}>
-                {saveMessage.type === 'success' ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
-                {saveMessage.text}
-              </div>
-            )}
           </Card>
         </motion.div>
 

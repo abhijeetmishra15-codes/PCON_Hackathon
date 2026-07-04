@@ -53,14 +53,17 @@ export default function Chat() {
   const activeRoom = activeRoomId ? conversations.find(c => c.id === activeRoomId) : null;
 
   return (
-    <div className="h-[calc(100vh-6rem)] -mt-2 -mx-2 sm:-mx-0 sm:-mt-0 animate-fade-in flex flex-col sm:flex-row gap-4">
-      {/* Desktop Layout / Mobile List View */}
+    <div className="h-[calc(100vh-6rem)] -mt-2 -mx-2 sm:-mx-0 sm:-mt-0 flex flex-col sm:flex-row gap-4">
+      {/* Sidebar / Conversation list */}
       <div className={cn(
-        "flex-shrink-0 w-full sm:w-[320px] lg:w-[380px] flex flex-col bg-card rounded-2xl border border-white/5 overflow-hidden",
+        "flex-shrink-0 w-full sm:w-[320px] lg:w-[360px] flex flex-col rounded-[22px] overflow-hidden",
+        "bg-gradient-to-b from-white to-[#FAFAF8]",
+        "border border-[rgba(0,0,0,0.052)]",
+        "shadow-[0_1px_2px_rgba(0,0,0,0.03),0_4px_20px_rgba(0,0,0,0.04)]",
         activeRoomId ? "hidden sm:flex" : "flex"
       )}>
-        <div className="p-4 border-b border-white/5 bg-secondary/50">
-          <h2 className="text-[20px] font-bold text-text-main">Messages</h2>
+        <div className="p-5 flex-shrink-0" style={{ borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
+          <h2 className="text-[20px] font-bold text-text-main" style={{ letterSpacing: '-0.025em' }}>Messages</h2>
         </div>
         
         <div className="flex-1 overflow-hidden flex flex-col">
@@ -79,9 +82,12 @@ export default function Chat() {
         </div>
       </div>
 
-      {/* Desktop Layout / Mobile Chat View */}
+      {/* Chat Window */}
       <div className={cn(
-        "flex-1 flex flex-col bg-card rounded-2xl border border-white/5 overflow-hidden",
+        "flex-1 flex flex-col rounded-[22px] overflow-hidden",
+        "bg-gradient-to-b from-white to-[#FAFAF8]",
+        "border border-[rgba(0,0,0,0.052)]",
+        "shadow-[0_1px_2px_rgba(0,0,0,0.03),0_4px_20px_rgba(0,0,0,0.04)]",
         !activeRoomId ? "hidden sm:flex" : "flex"
       )}>
         {activeRoomId && (

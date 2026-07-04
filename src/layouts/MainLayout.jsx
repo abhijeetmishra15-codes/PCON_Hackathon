@@ -9,19 +9,19 @@ export default function MainLayout() {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen flex bg-radial-accent" style={{ background: 'linear-gradient(160deg, #FAFAF8 0%, #F8F6F2 45%, #FAFAF8 100%)' }}>
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />
 
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-[240px] transition-all duration-300">
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-[244px] transition-all duration-300">
         <Navbar
           onMenuClick={() => setIsSidebarOpen(true)}
           onSearchClick={() => setIsCommandPaletteOpen(true)}
         />
 
-        <main className="flex-1 p-5 sm:p-7 lg:p-8 overflow-x-hidden">
+        <main className="flex-1 p-5 sm:p-8 lg:p-10 overflow-x-hidden">
           <div className="max-w-7xl mx-auto w-full h-full">
             <Outlet />
           </div>
