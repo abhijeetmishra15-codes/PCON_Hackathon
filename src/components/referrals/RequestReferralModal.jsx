@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Building2, Briefcase, Link as LinkIcon, FileText, CheckCircle, AlertCircle } from 'lucide-react';
+import { X, Send, Building2, Briefcase, Link as LinkIcon, FileText, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
 import { Button, Input } from '../ui';
 import { useResume } from '../../hooks/useResume';
 import { useNavigate } from 'react-router-dom';
+import GenerateReferralModal from './GenerateReferralModal';
 
 export default function RequestReferralModal({ isOpen, onClose, alumni, initialData, onSubmit, isSubmitting }) {
   const navigate = useNavigate();
   const { resume, isLoading: isLoadingResume } = useResume();
   const [mounted, setMounted] = useState(false);
+  const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     companyName: '',
@@ -149,7 +151,19 @@ export default function RequestReferralModal({ isOpen, onClose, alumni, initialD
 
                 <div className="space-y-1.5 pt-2">
                   <div className="flex justify-between items-end">
-                    <label className="text-[13px] font-bold text-text-main">Pitch Message *</label>
+                    <label className="text-[13px] font-bold text-text-main flex items-center gap-2">
+                      Pitch Message *
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsGeneratorOpen(true)}
+                        className="h-6 px-2 text-[11px] bg-primary/10 text-primary hover:bg-primary/20 border-none ml-2"
+                        leftIcon={<Sparkles size={12} />}
+                      >
+                        AI Generate
+                      </Button>
+                    </label>
                     <span className={`text-[11px] font-medium ${formData.message.length > 500 ? 'text-red-500' : 'text-text-secondary'}`}>
                       {formData.message.length}/500
                     </span>
@@ -219,6 +233,16 @@ export default function RequestReferralModal({ isOpen, onClose, alumni, initialD
               </Button>
             </div>
           </motion.div>
+
+          {isGeneratorOpen && (
+            <GenerateReferralModal 
+              isOpen={isGeneratorOpen}
+              onClose={() => setIsGeneratorOpen(false)}
+              alumni={alumni}
+              targetOpportunity={formData.jobTitle}
+              targetCompany={formData.companyName}
+            />
+          )}
         </>
       )}
     </AnimatePresence>,

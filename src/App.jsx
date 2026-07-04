@@ -10,6 +10,8 @@ import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import AIAssistant from './pages/AIAssistant';
+import CareerRoadmap from './pages/CareerRoadmap';
+import InterviewPrep from './pages/InterviewPrep';
 import Discover from './pages/Discover';
 import Referrals from './pages/Referrals';
 import Leaderboard from './pages/Leaderboard';
@@ -51,6 +53,8 @@ function App() {
               <Route path="/discover" element={<Discover />} />
               <Route path="/referrals" element={<Referrals />} />
               <Route path="/assistant" element={<AIAssistant />} />
+              <Route path="/roadmap" element={<CareerRoadmap />} />
+              <Route path="/interview" element={<InterviewPrep />} />
               <Route path="/network" element={<Network />} />
               <Route path="/opportunities" element={<Opportunities />} />
               <Route path="/my-opportunities" element={<MyOpportunities />} />

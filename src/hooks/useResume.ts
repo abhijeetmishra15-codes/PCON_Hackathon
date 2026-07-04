@@ -10,6 +10,7 @@ export function useResume() {
   
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchResume = useCallback(async () => {
@@ -59,6 +60,32 @@ export function useResume() {
     }
   };
 
+  const analyzeResume = async () => {
+    if (!resume) throw new Error('No resume uploaded to analyze');
+    
+    setIsAnalyzing(true);
+    setError(null);
+    try {
+      const newAnalysis = await ResumeService.analyzeResume(resume.id, resume.file_url);
+      setAnalysis(newAnalysis);
+      return newAnalysis;
+    } catch (err: any) {
+      throw new Error(err.message || 'Failed to analyze resume');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const analyzeJobMatch = async (jobTitle: string, jobDescription: string) => {
+    if (!resume) throw new Error('No resume uploaded to analyze');
+    
+    try {
+      return await ResumeService.analyzeJobMatch(resume.id, resume.file_url, jobTitle, jobDescription);
+    } catch (err: any) {
+      throw new Error(err.message || 'Failed to analyze job match');
+    }
+  };
+
   const getDownloadUrl = async () => {
     if (!resume) throw new Error('No resume found');
     try {
@@ -73,10 +100,13 @@ export function useResume() {
     analysis,
     isLoading,
     isUploading,
+    isAnalyzing,
     error,
     uploadResume,
     deleteResume,
     getDownloadUrl,
+    analyzeResume,
+    analyzeJobMatch,
     refreshResume: fetchResume
   };
 }

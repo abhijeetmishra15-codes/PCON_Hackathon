@@ -13,7 +13,9 @@ import {
   LogOut,
   Building2,
   Calendar,
-  MessageCircle
+  MessageCircle,
+  Map,
+  Mic
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../contexts/AuthContext';
@@ -30,6 +32,8 @@ export default function Sidebar({ isOpen, onClose }) {
     { icon: Users, label: 'Network', to: '/network' },
     { icon: MessageCircle, label: 'Messages', to: '/chat' },
     { icon: MessageSquare, label: 'AI Assistant', to: '/assistant' },
+    { icon: Map, label: 'Career Roadmap', to: '/roadmap' },
+    { icon: Mic, label: 'Interview Prep', to: '/interview' },
     { icon: Trophy, label: 'Leaderboard', to: '/leaderboard' },
     { icon: Calendar, label: 'Events', to: '/events' },
     { icon: Calendar, label: 'My Events', to: '/my-events' },

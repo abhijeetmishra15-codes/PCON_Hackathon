@@ -3,9 +3,10 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Building2, Briefcase, GraduationCap, 
-  MessageSquare, UserPlus, FileText, CheckCircle 
+  MessageSquare, UserPlus, FileText, CheckCircle, Sparkles 
 } from 'lucide-react';
 import { Button, Badge, Avatar } from './ui';
+import GenerateReferralModal from './referrals/GenerateReferralModal';
 
 export default function AlumniProfileModal({ 
   isOpen, 
@@ -20,6 +21,7 @@ export default function AlumniProfileModal({
   onRequestReferral
 }) {
   const [mounted, setMounted] = useState(false);
+  const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -268,6 +270,15 @@ export default function AlumniProfileModal({
                       );
                     })()}
                     
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start h-11 text-primary hover:bg-primary/5 hover:text-primary transition-colors" 
+                      leftIcon={<Sparkles size={16} />}
+                      onClick={() => setIsGeneratorOpen(true)}
+                    >
+                      ✨ Generate AI Referral Request
+                    </Button>
+
                     <Button variant="ghost" className="w-full justify-start h-11 text-text-secondary hover:text-text-main" leftIcon={<MessageSquare size={16} />}>
                       Message (Coming Soon)
                     </Button>
@@ -276,6 +287,14 @@ export default function AlumniProfileModal({
               </div>
             </div>
           </motion.div>
+
+          {isGeneratorOpen && (
+            <GenerateReferralModal 
+              isOpen={isGeneratorOpen}
+              onClose={() => setIsGeneratorOpen(false)}
+              alumni={alumni}
+            />
+          )}
         </>
       )}
     </AnimatePresence>,

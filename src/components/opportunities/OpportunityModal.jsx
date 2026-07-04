@@ -1,6 +1,7 @@
 import React from 'react';
 import { Building2, MapPin, Briefcase, Calendar, Link as LinkIcon, DollarSign, Clock, Send } from 'lucide-react';
 import { Modal, Button, Badge, Avatar } from '../ui';
+import AnalyzeMatchModal from './AnalyzeMatchModal';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function OpportunityModal({ 
@@ -26,6 +27,7 @@ export default function OpportunityModal({
 
   const isStudent = user?.user_metadata?.role === 'student';
   const isAuthor = user?.id === opportunity.author_id;
+  const [isMatchModalOpen, setIsMatchModalOpen] = React.useState(false);
 
   return (
     <Modal
@@ -157,6 +159,17 @@ export default function OpportunityModal({
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-border">
+          {isStudent && (
+             <Button 
+               variant="secondary"
+               onClick={() => setIsMatchModalOpen(true)}
+               leftIcon={<span className="text-lg leading-none mt-0.5">✨</span>}
+               className="w-full sm:w-auto bg-gradient-to-r from-primary/10 to-accent/10 hover:from-primary/20 hover:to-accent/20 border-primary/20 text-primary shadow-sm"
+             >
+               Analyze Match
+             </Button>
+          )}
+          
           {opportunity.application_url && (
             <Button 
               variant="outline" 
@@ -179,6 +192,14 @@ export default function OpportunityModal({
           )}
         </div>
       </div>
+
+      {isMatchModalOpen && (
+        <AnalyzeMatchModal 
+          isOpen={isMatchModalOpen}
+          onClose={() => setIsMatchModalOpen(false)}
+          opportunity={opportunity}
+        />
+      )}
     </Modal>
   );
 }

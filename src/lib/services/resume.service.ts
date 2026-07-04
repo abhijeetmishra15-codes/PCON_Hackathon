@@ -116,5 +116,39 @@ export const ResumeService = {
       .eq('id', resume.id);
 
     if (error) throw error;
+  },
+
+  async analyzeResume(resumeId: string, fileUrl: string): Promise<ResumeAnalysisData> {
+    const { data, error } = await supabase.functions.invoke('analyze-resume', {
+      body: { resumeId, fileUrl }
+    });
+
+    if (error) {
+      console.error('Edge function error:', error);
+      throw new Error(error.message || 'Failed to analyze resume');
+    }
+    
+    if (data.error) {
+       throw new Error(data.error);
+    }
+
+    return data;
+  },
+
+  async analyzeJobMatch(resumeId: string, fileUrl: string, jobTitle: string, jobDescription: string): Promise<any> {
+    const { data, error } = await supabase.functions.invoke('analyze-resume', {
+      body: { resumeId, fileUrl, jobTitle, jobDescription }
+    });
+
+    if (error) {
+      console.error('Edge function error:', error);
+      throw new Error(error.message || 'Failed to analyze job match');
+    }
+    
+    if (data.error) {
+       throw new Error(data.error);
+    }
+
+    return data;
   }
 };
