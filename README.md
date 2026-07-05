@@ -1,35 +1,70 @@
-# 🎓 Alumni Connect
+<div align="center">
 
-**Bridging students and alumni — one connection, opportunity, and referral at a time.**
+```
+ █████╗ ██╗     ██╗   ██╗███╗   ███╗███╗   ██╗██╗
+██╔══██╗██║     ██║   ██║████╗ ████║████╗  ██║██║
+███████║██║     ██║   ██║██╔████╔██║██╔██╗ ██║██║
+██╔══██║██║     ██║   ██║██║╚██╔╝██║██║╚██╗██║██║
+██║  ██║███████╗╚██████╔╝██║ ╚═╝ ██║██║ ╚████║██║
+╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝
 
-![React](https://img.shields.io/badge/Frontend-React-61DAFB?logo=react&logoColor=black)
-![Vite](https://img.shields.io/badge/Bundler-Vite-646CFF?logo=vite&logoColor=white)
-![Supabase](https://img.shields.io/badge/Backend-Supabase-3ECF8E?logo=supabase&logoColor=white)
-![License](https://img.shields.io/badge/License-TODO-lightgrey)
-![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+ ██████╗ ██████╗ ███╗   ██╗███╗   ██╗███████╗ ██████╗████████╗
+██╔════╝██╔═══██╗████╗  ██║████╗  ██║██╔════╝██╔════╝╚══██╔══╝
+██║     ██║   ██║██╔██╗ ██║██╔██╗ ██║█████╗  ██║        ██║
+██║     ██║   ██║██║╚██╗██║██║╚██╗██║██╔══╝  ██║        ██║
+╚██████╗╚██████╔╝██║ ╚████║██║ ╚████║███████╗╚██████╗   ██║
+ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═╝
+```
+
+### 🎓 Connecting Students & Alumni — Opportunities, Referrals, Events & Mentorship in One Platform
+
+<br/>
+
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-TODO-lightgrey?style=for-the-badge)](#-license)
+
+<br/>
+
+> **Alumni Connect** bridges the gap between students and alumni — turning a scattered network of contacts into a structured platform for opportunities, referrals, events, and mentorship.
+
+<br/>
+
+[🚀 Get Started](#-getting-started) · [🏗️ Architecture](#️-architecture) · [✨ Features](#-features) · [🗄️ Database](#️-database) · [🔒 Security](#-security)
+
+</div>
 
 ---
 
-## 📖 Overview
+## 🌟 Why Alumni Connect?
 
-**Alumni Connect** is a comprehensive platform designed to foster meaningful connections between students and alumni within an institution's community. It provides tools for **networking, sharing opportunities, managing events, and facilitating referrals**, helping students tap into the experience and industry access of their alumni network.
+Institutions often rely on informal, disconnected channels for students to reach alumni — scattered LinkedIn messages, WhatsApp groups, or word of mouth. **Alumni Connect** replaces that with a single, structured platform:
 
-The platform exists to solve a common gap in academic institutions — students often lack a structured, trustworthy way to reach alumni for **job opportunities, referrals, mentorship, and events**. Alumni Connect brings these interactions into one verified, moderated ecosystem.
+| Without Alumni Connect | With Alumni Connect |
+|---|---|
+| 📱 Students cold-message alumni on LinkedIn | 📋 Students submit structured referral requests in-app |
+| 📄 Resumes shared informally, never reviewed | 🤖 Resumes analyzed via AI before reaching alumni |
+| 🗂️ Job leads lost in group chats | 💼 Centralized, filterable opportunities board |
+| 🎟️ Events organized ad hoc, no RSVP tracking | 📅 Structured event hosting with capacity & registration |
+| 🙈 No way to recognize helpful alumni | 🏆 Points-based leaderboard rewards top contributors |
+| ✅ No vetting of who's really an alum | 🛡️ Admin-verified alumni registrations |
 
 ---
 
 ## ✨ Features
 
 <details>
-<summary><strong>🔐 Authentication</strong></summary>
+<summary><b>🔐 Authentication</b></summary>
+<br/>
 
-- User authentication managed via **Supabase Auth**, integrated through a dedicated **Auth Context** in the frontend.
-- Dedicated auth pages/components: **Login, Register, Forgot Password**.
-
+User authentication and session management are handled via **Supabase Auth**, wired into the frontend through a dedicated **Auth Context**. Dedicated flows exist for **Login, Register,** and **Forgot Password**.
 </details>
 
 <details>
-<summary><strong>🎓 Student Features</strong></summary>
+<summary><b>🎓 Student Features</b></summary>
+<br/>
 
 - Browse job openings, internships, and freelance opportunities posted by alumni.
 - Filter opportunities by **type or industry**.
@@ -37,134 +72,201 @@ The platform exists to solve a common gap in academic institutions — students 
 - Request referrals from verified alumni working at specific companies.
 - Attach a resume to referral requests for **AI-assisted analysis**.
 - Browse and register for upcoming webinars, meetups, and campus events.
-- View other attendees registered for the same event.
-
+- See other attendees registered for the same event.
 </details>
 
 <details>
-<summary><strong>🎓 Alumni Features</strong></summary>
+<summary><b>🎓 Alumni Features</b></summary>
+<br/>
 
 - Post job openings, internships, or freelance projects through a personal dashboard.
-- Manage posted opportunities.
+- Manage previously posted opportunities.
 - Receive referral requests from students and choose to **generate or decline** a referral.
 - Host events — setting dates, capacities, and descriptions.
-- Earn recognition through a **point/ranking system** based on contributions (referrals given, events hosted, questions answered).
-
+- Earn recognition through a **point/ranking system** based on referrals given, events hosted, and questions answered.
 </details>
 
 <details>
-<summary><strong>🛠️ Admin Features</strong></summary>
+<summary><b>🛠️ Admin Features</b></summary>
+<br/>
 
 - Access a comprehensive **`/admin` portal**.
 - Verify new alumni registrations to ensure platform authenticity.
 - Moderate submitted opportunities before they go live (review pipeline).
 - Moderate events and manage overall community health.
 - Broadcast notifications to users.
-
 </details>
 
 <details>
-<summary><strong>🤝 Referrals</strong></summary>
+<summary><b>🤝 Referrals</b></summary>
+<br/>
 
-- Students request referrals from verified alumni at specific companies.
-- Resumes can be analyzed via **Edge Functions** (AI-powered resume analysis).
-- Alumni review requests and decide to generate or decline the referral.
-- Creates a direct pipeline connecting students with opportunities at target companies.
-
+Students request referrals from verified alumni at specific companies. Resumes can be analyzed via **Supabase Edge Functions** (AI-powered resume analysis) before alumni review the request. Alumni then choose to generate or decline the referral — creating a direct pipeline between students and opportunities at their target companies.
 </details>
 
 <details>
-<summary><strong>🔔 Notifications</strong></summary>
+<summary><b>🔔 Notifications</b></summary>
+<br/>
 
-- Dedicated **notification center components** in the frontend.
-- Admins can broadcast notifications platform-wide.
-
+Dedicated **notification center components** surface updates to users. Admins can broadcast platform-wide notifications.
 </details>
 
 <details>
-<summary><strong>🔍 Search & Discovery</strong></summary>
+<summary><b>🔍 Search & Discovery</b></summary>
+<br/>
 
-- A dedicated **Discover** page for exploring opportunities, alumni, and events.
-- Filtering support for opportunities by **type/industry**.
-
+A dedicated **Discover** page lets students and alumni explore opportunities, alumni profiles, and events, with filtering support by type/industry.
 </details>
 
 <details>
-<summary><strong>🏆 Gamification</strong></summary>
+<summary><b>🏆 Gamification</b></summary>
+<br/>
 
-- **Leaderboard / Hall of Fame** highlighting top alumni contributors.
-- Rankings are based on referrals given, events hosted, and questions answered.
-- Ranks update dynamically to encourage ongoing engagement.
-
+A **Leaderboard / Hall of Fame** highlights top alumni contributors, ranked by referrals given, events hosted, and questions answered. Ranks update dynamically to encourage ongoing engagement.
 </details>
 
 <details>
-<summary><strong>🔒 Security</strong></summary>
+<summary><b>🔒 Security</b></summary>
+<br/>
 
 - Authentication and session handling delegated to **Supabase Auth**.
 - Admin-side verification step for new alumni sign-ups to prevent impersonation.
 - Admin moderation pipeline for opportunities and events before public visibility.
 
-> TODO: Add details on Row-Level Security (RLS) policies, input validation, and other backend security practices if applicable.
-
+> TODO: Document Row-Level Security (RLS) policies, input validation, and other backend security practices if applicable.
 </details>
 
 <details>
-<summary><strong>➕ Other Features</strong></summary>
+<summary><b>➕ Other Features</b></summary>
+<br/>
 
 - Avatar and file uploads handled via **Supabase Storage**.
 - Smooth UI interactions powered by **Framer Motion** and **Lucide** icons.
-
 </details>
 
 ---
 
 ## 🏗️ Architecture
 
-Alumni Connect follows a **modern serverless architecture**, using **React (Vite)** on the frontend and **Supabase** for backend infrastructure — authentication, database, storage, and serverless compute via Edge Functions.
+### System Overview
 
-```mermaid
-graph TD
-    Client["Client (Browser)"]
-    
-    subgraph Frontend["Frontend - React + Vite"]
-        Router["React Router DOM"]
-        AuthCtx["Auth Context"]
-        Pages["Pages: Dashboard, Discover, Events"]
-        Components["UI Components: Framer Motion, Lucide"]
-        
-        Router --> Pages
-        Pages --> Components
-        AuthCtx --> Pages
-    end
-    
-    subgraph Backend["Supabase"]
-        Auth["Supabase Auth"]
-        DB["PostgreSQL Database"]
-        Storage["Supabase Storage"]
-        Edge["Edge Functions"]
-    end
-    
-    Client --> Router
-    Pages -- "Authentication" --> Auth
-    Pages -- "CRUD Operations via Supabase JS" --> DB
-    Pages -- "Avatar/File Uploads" --> Storage
-    Pages -- "AI Resume Analysis" --> Edge
+```
+╔══════════════════════════════════════════════════════════════════════════╗
+║                       ALUMNI CONNECT — SYSTEM FLOW                       ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │                     👤  STUDENT / ALUMNI / ADMIN                      │
+ └───────────────────┬─────────────────────────────┬─────────────────────┘
+                     │                             │
+              [Posts / Applies /            [Views Dashboard /
+               Requests Referral]            Discover / Events /
+                     │                        Leaderboard]
+                     ▼                             ▼
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │                 🖥️  REACT (VITE) FRONTEND                             │
+ │                                                                       │
+ │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                │
+ │  │ React Router │  │ Auth Context │  │  Framer       │                │
+ │  │    DOM       │  │              │  │  Motion + UI  │                │
+ │  └──────────────┘  └──────────────┘  └──────────────┘                │
+ │                                                                       │
+ │  Pages: Dashboard · Discover · Events · Referrals · Admin             │
+ └───────────────────┬─────────────────────────────┬─────────────────────┘
+                     │                             │
+             [Auth] │            [CRUD via         │  [Avatar / File
+                     │            Supabase JS]      │   Uploads]
+                     ▼                             ▼
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │                       ⚡  SUPABASE PLATFORM                           │
+ │                                                                       │
+ │  ┌─────────────┐   ┌───────────────────────┐   ┌───────────────────┐ │
+ │  │  Supabase   │   │  PostgreSQL Database   │   │ Supabase Storage  │ │
+ │  │    Auth     │   │  (opportunities,       │   │ (avatars, resumes,│ │
+ │  │             │   │   referrals, events,   │   │  event/media      │ │
+ │  │             │   │   users, notifications)│   │  assets)          │ │
+ │  └─────────────┘   └───────────┬───────────┘   └───────────────────┘ │
+ └────────────────────────────────┼───────────────────────────────────────┘
+                                  │
+                       [Referral Submitted +
+                        Resume Attached]
+                                  │
+                                  ▼
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │              🦕  SUPABASE EDGE FUNCTIONS (Deno Runtime)               │
+ │                                                                       │
+ │                     AI Resume Analysis Function                      │
+ │                                                                       │
+ │   1. Receive referral request + attached resume                      │
+ │   2. Run AI-assisted analysis on resume content                      │
+ │   3. Return structured insights to the referral pipeline             │
+ └───────────────────────────────────────────────────────────────────────┘
+```
+
+### Referral Lifecycle
+
+```
+                    ┌──────────────────────┐
+                    │  📝  REQUEST CREATED  │  ← Student selects alumnus + company
+                    └──────────┬───────────┘
+                               │  Resume attached (optional)
+                               ▼
+                    ┌──────────────────────┐
+                    │  🤖  AI ANALYSIS      │  ← Edge Function analyzes resume
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │  📬  ALUMNI REVIEW    │  ← Alumnus reviews the request
+                    └──────────┬───────────┘
+                     ┌─────────┴─────────┐
+                     ▼                   ▼
+          ┌────────────────────┐  ┌────────────────────┐
+          │  ✅  GENERATED      │  │  ❌  DECLINED       │
+          │  (Referral issued) │  │  (Request closed)  │
+          └──────────┬─────────┘  └────────────────────┘
+                     │
+                     ▼
+          Points awarded to alumnus 🏆
+```
+
+### Opportunity Moderation Flow
+
+```
+   ┌────────────────┐      ┌────────────────┐      ┌────────────────┐
+   │  📝  SUBMITTED  │ ───► │  ⏳  IN REVIEW  │ ───► │  ✅  APPROVED   │
+   │ (by Alumni)    │      │ (Admin queue)  │      │ (Visible to    │
+   └────────────────┘      └───────┬────────┘      │  all Students) │
+                                   │                └────────────────┘
+                                   ▼
+                          ┌────────────────┐
+                          │  ❌  REJECTED   │
+                          └────────────────┘
 ```
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer              | Technology                                             |
-|---------------------|--------------------------------------------------------|
-| **Frontend**        | React (Vite), React Router DOM, Framer Motion, Lucide  |
-| **Backend**         | Supabase (Edge Functions — Deno runtime)               |
-| **Database**        | PostgreSQL (via Supabase)                              |
-| **Authentication**  | Supabase Auth                                          |
-| **Storage**         | Supabase Storage (avatars, file uploads)               |
-| **Deployment**      | > TODO: Add deployment platform (e.g., Vercel, Netlify) |
-| **AI Tools**        | AI-powered resume analysis via Supabase Edge Functions |
+### Frontend
+| Layer | Technology |
+|---|---|
+| Framework | React (Vite) |
+| Routing | React Router DOM |
+| State/Context | React Context (Auth Context) |
+| Animations | Framer Motion |
+| Icons | Lucide |
+| Styling | Tailwind CSS |
+
+### Backend & AI
+| Layer | Technology |
+|---|---|
+| BaaS | Supabase (Auth, Database, Storage, Edge Functions) |
+| Database | PostgreSQL (via Supabase) |
+| Serverless | Supabase Edge Functions (Deno runtime) |
+| AI | AI-powered resume analysis via Edge Functions |
+| File Storage | Supabase Storage (avatars, file uploads) |
+| Deployment | > TODO: Add deployment platform (e.g., Vercel, Netlify) |
 
 ---
 
@@ -172,34 +274,34 @@ graph TD
 
 ```
 Alumni_Connect/
-├── public/                 # Static assets
-├── supabase/                # Backend configuration and edge functions
-│   └── functions/           # Deno edge functions (e.g., AI resume analysis)
+├── public/                     # Static assets
+├── supabase/                   # Backend configuration and edge functions
+│   └── functions/              # Deno edge functions (e.g., AI resume analysis)
 ├── src/
-│   ├── assets/               # Project-specific assets (images, fonts)
-│   ├── components/           # Reusable UI components
-│   │   ├── auth/              # Authentication related components
-│   │   ├── events/            # Event management components
-│   │   ├── layout/             # Structural components (Sidebar, Navbar)
-│   │   ├── notifications/      # Notification center components
-│   │   ├── opportunities/      # Job/Internship board components
-│   │   ├── referrals/          # Referral request/generation components
-│   │   └── ui/                  # Generic UI elements (Buttons, Cards, Modals)
-│   ├── contexts/              # React Contexts (AuthContext)
-│   ├── hooks/                  # Custom React hooks (useReferrals, etc.)
-│   ├── lib/                    # Third-party library integration
-│   │   └── supabase.js          # Supabase client initialization
-│   ├── pages/                  # Top-level route components
-│   │   ├── admin/                # Admin dashboard and moderation views
-│   │   ├── auth/                  # Login, Register, Forgot Password
-│   │   └── ...                     # Dashboard, Discover, Events, etc.
-│   ├── utils/                   # Helper utilities (date formatting, cn)
-│   ├── App.jsx                  # Main application and routing setup
-│   ├── index.css                 # Global styles and Tailwind configuration
-│   └── main.jsx                   # Application entry point
-├── .env.example                 # Sample environment variable template
-├── package.json                  # Project dependencies and scripts
-└── vite.config.js                 # Vite build configuration
+│   ├── assets/                 # Project-specific assets (images, fonts)
+│   ├── components/             # Reusable UI components
+│   │   ├── auth/                # Authentication related components
+│   │   ├── events/               # Event management components
+│   │   ├── layout/                # Structural components (Sidebar, Navbar)
+│   │   ├── notifications/          # Notification center components
+│   │   ├── opportunities/           # Job/Internship board components
+│   │   ├── referrals/                # Referral request/generation components
+│   │   └── ui/                        # Generic UI elements (Buttons, Cards, Modals)
+│   ├── contexts/                # React Contexts (AuthContext)
+│   ├── hooks/                   # Custom React hooks (useReferrals, etc.)
+│   ├── lib/                     # Third-party library integration
+│   │   └── supabase.js           # Supabase client initialization
+│   ├── pages/                   # Top-level route components
+│   │   ├── admin/                 # Admin dashboard and moderation views
+│   │   ├── auth/                    # Login, Register, Forgot Password
+│   │   └── ...                        # Dashboard, Discover, Events, etc.
+│   ├── utils/                    # Helper utilities (date formatting, cn)
+│   ├── App.jsx                    # Main application and routing setup
+│   ├── index.css                   # Global styles and Tailwind configuration
+│   └── main.jsx                     # Application entry point
+├── .env.example                   # Sample environment variable template
+├── package.json                    # Project dependencies and scripts
+└── vite.config.js                   # Vite build configuration
 ```
 
 ---
@@ -207,7 +309,6 @@ Alumni_Connect/
 ## 🚀 Getting Started
 
 ### ✅ Prerequisites
-
 - **Node.js** installed on your system
 - A **Supabase** project (for Auth, Database, Storage, and Edge Functions)
 
@@ -223,8 +324,6 @@ npm install
 ```
 
 ### 🔑 Environment Variables (.env)
-
-Create a `.env` file in the project root with the following variables:
 
 ```env
 VITE_SUPABASE_URL=your_supabase_project_url
@@ -253,13 +352,32 @@ npm run build
 
 ## 🗄️ Database
 
-Alumni Connect uses a **PostgreSQL database** provisioned and managed through **Supabase**.
+```
+┌──────────────┐       ┌────────────────────┐       ┌────────────────────┐
+│    users     │       │   opportunities     │       │      referrals      │
+├──────────────┤       ├────────────────────┤       ├────────────────────┤
+│ id (PK)      │──┐    │ id (PK)             │──┐    │ id (PK)             │
+│ role         │  │    │ posted_by (FK)      │  │    │ requested_by (FK)   │
+│ points       │  └───►│ title / description │  └───►│ alumni_id (FK)      │
+│ verified     │       │ type / industry     │       │ resume_url          │
+└──────────────┘       │ status              │       │ status              │
+                       └────────────────────┘       └────────────────────┘
 
-> TODO: Add details of key database tables (e.g., users, opportunities, referrals, events, notifications) and their relationships.
+┌──────────────┐       ┌────────────────────┐
+│    events    │       │   notifications     │
+├──────────────┤       ├────────────────────┤
+│ id (PK)      │       │ id (PK)             │
+│ hosted_by FK │       │ broadcast_by (FK)   │
+│ date/capacity│       │ message             │
+│ attendees[]  │       │ created_at          │
+└──────────────┘       └────────────────────┘
+```
+
+> TODO: Confirm exact table names, columns, and relationships against the live Supabase schema.
 
 ---
 
-## 🔐 Security
+## 🔒 Security
 
 - **Authentication:** Handled entirely through **Supabase Auth**.
 - **Authorization / Verification:** Admins manually verify new alumni registrations to maintain community authenticity.
@@ -277,22 +395,16 @@ Alumni Connect uses a **PostgreSQL database** provisioned and managed through **
 
 ## 🤝 Contributing
 
-Contributions are welcome! To contribute:
+Contributions are welcome!
 
-1. **Fork** the repository
-2. **Create** a feature branch
-   ```bash
-   git checkout -b feature/your-feature
-   ```
-3. **Commit** your changes
-   ```bash
-   git commit -m "Add your feature"
-   ```
-4. **Push** to your branch
-   ```bash
-   git push origin feature/your-feature
-   ```
-5. **Open** a Pull Request
+```bash
+# Fork the repository, then:
+git checkout -b feature/your-feature
+git commit -m "Add your feature"
+git push origin feature/your-feature
+```
+
+Then open a **Pull Request** 🎉
 
 ---
 
@@ -308,4 +420,10 @@ Contributions are welcome! To contribute:
 
 ---
 
-<p align="center">Made with ❤️ to connect students and alumni.</p>
+<div align="center">
+
+Built with ❤️ to connect students and alumni.
+
+**[⬆ Back to top](#)**
+
+</div>
