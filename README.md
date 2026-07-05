@@ -127,29 +127,29 @@ Alumni Connect follows a **modern serverless architecture**, using **React (Vite
 graph TD
     Client["Client (Browser)"]
     
-    subgraph Frontend [Frontend (React + Vite)]
+    subgraph Frontend["Frontend - React + Vite"]
         Router["React Router DOM"]
         AuthCtx["Auth Context"]
-        Pages["Pages (Dashboard, Discover, Events)"]
-        Components["UI Components (Framer Motion, Lucide)"]
+        Pages["Pages: Dashboard, Discover, Events"]
+        Components["UI Components: Framer Motion, Lucide"]
         
         Router --> Pages
         Pages --> Components
         AuthCtx --> Pages
     end
     
-    subgraph Backend [Supabase]
+    subgraph Backend["Supabase"]
         Auth["Supabase Auth"]
         DB["PostgreSQL Database"]
         Storage["Supabase Storage"]
         Edge["Edge Functions"]
     end
     
-    Client --> Frontend
-    Frontend -- "Authentication" --> Auth
-    Frontend -- "CRUD Operations via Supabase JS" --> DB
-    Frontend -- "Avatar/File Uploads" --> Storage
-    Frontend -- "AI Resume Analysis" --> Edge
+    Client --> Router
+    Pages -- "Authentication" --> Auth
+    Pages -- "CRUD Operations via Supabase JS" --> DB
+    Pages -- "Avatar/File Uploads" --> Storage
+    Pages -- "AI Resume Analysis" --> Edge
 ```
 
 ---
